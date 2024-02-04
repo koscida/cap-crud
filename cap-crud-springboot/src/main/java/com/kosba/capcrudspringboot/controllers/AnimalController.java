@@ -42,6 +42,18 @@ public class AnimalController {
 	// Create 1
 	@PostMapping("/")
 	public ResponseEntity<Animal> createAnimal(@RequestBody Animal animal) {
+
+		// default values
+		if(animal.getName().isBlank())
+			animal.setName("Name");
+		if(animal.getAge() == -1)
+			animal.setAge(0);
+		if(animal.getEnergy() == -1)
+			animal.setEnergy(5);
+		if(animal.getHunger() == -1)
+			animal.setHunger(0);
+		// note: isDead will default to false
+
 		// save
 		Animal savedAnimal = this.animalRepository.save(animal);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedAnimal);
@@ -55,12 +67,17 @@ public class AnimalController {
 				() -> new ResourceNotFoundException("Animal not found for this id: " + id)
 		);
 
-		// update
-		animalUpdating.setName(animal.getName());
-		animalUpdating.setEnergy(animal.getEnergy());
-		animalUpdating.setHunger(animal.getHunger());
-		animalUpdating.setAge(animal.getAge());
-		animalUpdating.setDead(animal.isDead());
+		// update only if new value was sent
+		if(!animal.getName().isBlank())
+			animalUpdating.setName(animal.getName());
+		if(animal.getEnergy() != -1)
+			animalUpdating.setEnergy(animal.getEnergy());
+		if(animal.getHunger() != -1)
+			animalUpdating.setHunger(animal.getHunger());
+		if(animal.getAge() != -1)
+			animalUpdating.setAge(animal.getAge());
+		if(animal.isDead())
+			animalUpdating.setDead(animal.isDead());
 
 		// save
 		Animal updatedAnimal = this.animalRepository.save(animalUpdating);

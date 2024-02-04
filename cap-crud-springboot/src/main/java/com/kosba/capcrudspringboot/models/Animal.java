@@ -10,7 +10,7 @@ public class Animal {
 
 	@Id
 	@Column(name = "animal_id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private long id;
 
 	@Column(name = "name")
@@ -33,10 +33,18 @@ public class Animal {
 
 
 	public Animal() {
-		this.name = "New Animal";
-		this.hunger = 0;
-		this.energy = 5;
-		this.age = 0;
+		this.name = "";
+		this.hunger = -1;
+		this.energy = -1;
+		this.age = -1;
+		this.isDead = false;
+	}
+
+	public Animal(String name) {
+		this.name = name;
+		this.hunger = -1;
+		this.energy = -1;
+		this.age = -1;
 		this.isDead = false;
 	}
 
@@ -50,6 +58,10 @@ public class Animal {
 
 
 	// getters and setters
+
+	public long getId() {
+		return id;
+	}
 
 	public String getName() {
 		return name;
