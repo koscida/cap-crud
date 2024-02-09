@@ -5,6 +5,7 @@ import { MUIResponsiveAppBar } from "./components/MUIResponsiveAppBar";
 import AnimalList from "./components/AnimalList";
 import Home from "./components/Home";
 import AnimalNew from "./components/AnimalNew";
+import AnimalView from "./components/AnimalView";
 import AnimalEdit from "./components/AnimalEdit";
 
 // app created from the following tutorial:
@@ -22,8 +23,12 @@ function App() {
 							<Route path="animals" element={<AnimalList />} />
 							<Route path="animals/new" element={<AnimalNew />} />
 							<Route
-								path="animals/:id"
-								element={<AnimalEdit />}
+								path="animals/:id/"
+								element={<AnimalList />}
+							/>
+							<Route
+								path="animals/:id/edit"
+								element={<AnimalList />}
 							/>
 						</Routes>
 					</BrowserRouter>

@@ -8,15 +8,27 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import animalDataService from "../services/AnimalDataService";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import AnimalView from "./AnimalView";
 
 const AnimalList = () => {
+	let { id } = useParams();
 	const [animals, setAnimals] = useState([]);
-	const [selectedAnimalId, setSelectedAnimalId] = useState(null);
+	const [selectedId, setSelectedId] = useState(parseInt(id));
+
+	let navigate = useNavigate();
+
+	// on load
 
 	useEffect(() => {
+		if (!animals || animals.length === 0) pullList();
+		setSelectedId(parseInt(id));
+	}, [id]);
+
+	// get list
+	const pullList = () => {
 		// send
 		animalDataService
 			.getAll()
@@ -24,24 +36,9 @@ const AnimalList = () => {
 				console.log(res);
 				// set the animal list
 				setAnimals(res.data);
-				// set the first selected animal
-				if (res.data.length > 0) setSelectedAnimalId(res.data[0].id);
 			})
 			.catch((e) => console.log(e));
-	}, []);
-
-	// handlers
-	const handleAnimalSelect = (event, id) => {
-		setSelectedAnimalId(id);
 	};
-
-	// const Item = styled(Paper)(({ theme }) => ({
-	// 	backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-	// 	...theme.typography.body2,
-	// 	padding: theme.spacing(1),
-	// 	textAlign: "center",
-	// 	color: theme.palette.text.secondary,
-	// }));
 
 	return (
 		<>
@@ -49,39 +46,39 @@ const AnimalList = () => {
 				<h1>Animal List</h1>
 			</Box>
 			<Grid container spacing={2}>
-				<Grid xs={4}>
+				<Grid item="true" xs={4}>
 					<Paper>
 						<List>
 							{animals.map((animal) => (
 								<ListItemButton
 									key={animal.id}
-									selected={selectedAnimalId === animal.id}
+									selected={selectedId === animal.id}
 									sx={{ borderBottom: "1px solid #eee" }}
 									onClick={(e) =>
-										handleAnimalSelect(e, animal.id)
+										navigate(`/animals/${animal.id}`)
 									}
 								>
-									<ListItemText primary={animal.name} />
+									<ListItemText
+										primary={`${animal.name} (${animal.id})`}
+									/>
 								</ListItemButton>
 							))}
 						</List>
 					</Paper>
 				</Grid>
-				<Grid xs={8}>
-					{selectedAnimalId ? (
-						<>
+
+				<Grid item="true" xs={8}>
+					<Box>
+						{selectedId > 0 ? (
 							<AnimalView
-								animal={
-									animals.filter(
-										(animal) =>
-											animal.id === selectedAnimalId
-									)[0]
-								}
+								animal={animals.find(
+									(a) => a.id === selectedId
+								)}
 							/>
-						</>
-					) : (
-						<></>
-					)}
+						) : (
+							<React.Fragment></React.Fragment>
+						)}
+					</Box>
 				</Grid>
 			</Grid>
 		</>

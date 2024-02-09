@@ -21,8 +21,8 @@ import { Link } from "react-router-dom";
 const pageName = "ANIMALS";
 const NameIcon = PetsIcon;
 const pages = [
-	["Animal List", "animals"],
-	["New Animal", "animals/new"],
+	["Animal List", "/animals"],
+	["New Animal", "/animals/new"],
 ];
 const settings = ["Profile", "Account", "Logout"];
 
@@ -56,7 +56,7 @@ export function MUIResponsiveAppBar() {
 						variant="h6"
 						noWrap
 						component="a"
-						href="#app-bar-with-responsive-menu"
+						href="/"
 						sx={{
 							mr: 2,
 							display: { xs: "none", md: "flex" },
@@ -109,6 +109,7 @@ export function MUIResponsiveAppBar() {
 								<MenuItem
 									key={page}
 									onClick={handleCloseNavMenu}
+									href={link}
 								>
 									<Typography textAlign="center">
 										{page}
@@ -150,7 +151,7 @@ export function MUIResponsiveAppBar() {
 							<Button
 								key={page}
 								onClick={handleCloseNavMenu}
-								link={link}
+								href={link}
 								sx={{ my: 2, color: "white", display: "block" }}
 							>
 								{page}
