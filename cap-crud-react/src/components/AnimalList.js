@@ -12,8 +12,17 @@ import { useNavigate, useParams } from "react-router-dom";
 import animalDataService from "../services/AnimalDataService";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import AnimalView from "./AnimalView";
+import AnimalEdit from "./AnimalEdit";
 
-const AnimalList = () => {
+// helper
+
+const findSelectedAnimal = (animals, selectedId) => {
+	return animals && selectedId
+		? animals.find((a) => a.id === selectedId)
+		: null;
+};
+
+const AnimalList = ({ isEditing = false }) => {
 	let { id } = useParams();
 	const [animals, setAnimals] = useState([]);
 	const [selectedId, setSelectedId] = useState(parseInt(id));
@@ -25,7 +34,13 @@ const AnimalList = () => {
 	useEffect(() => {
 		if (!animals || animals.length === 0) pullList();
 		setSelectedId(parseInt(id));
-	}, [id]);
+		console.log(
+			"--AnimalList-- animals: ",
+			animals,
+			" selectedId: ",
+			selectedId
+		);
+	}, [id, animals]);
 
 	// get list
 	const pullList = () => {
@@ -69,14 +84,14 @@ const AnimalList = () => {
 
 				<Grid item="true" xs={8}>
 					<Box>
-						{selectedId > 0 ? (
-							<AnimalView
-								animal={animals.find(
-									(a) => a.id === selectedId
-								)}
+						{isEditing && animals ? (
+							<AnimalEdit
+								animal={findSelectedAnimal(animals, selectedId)}
 							/>
 						) : (
-							<React.Fragment></React.Fragment>
+							<AnimalView
+								animal={findSelectedAnimal(animals, selectedId)}
+							/>
 						)}
 					</Box>
 				</Grid>

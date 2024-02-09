@@ -28,7 +28,7 @@ function App() {
 							/>
 							<Route
 								path="animals/:id/edit"
-								element={<AnimalList />}
+								element={<AnimalList isEditing={true} />}
 							/>
 						</Routes>
 					</BrowserRouter>
