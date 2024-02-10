@@ -2,7 +2,9 @@ package com.kosba.capcrudspringboot.controllers;
 
 import com.kosba.capcrudspringboot.models.Animal;
 import com.kosba.capcrudspringboot.models.AnimalRepository;
+import com.kosba.capcrudspringboot.models.Zoo;
 import com.kosba.capcrudspringboot.util.ResourceNotFoundException;
+import com.kosba.capcrudspringboot.web.WebService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -11,92 +13,169 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @RestController
-@RequestMapping("/api/animals")
+@RequestMapping("/api/zoos/{zooId}/animals")
 public class AnimalController {
 
+
+//	AnimalRepository animalRepository;
 	@Autowired
-	AnimalRepository animalRepository;
+	WebService webService;
+
 
 	// Read all
 	@GetMapping("/")
-	public ResponseEntity<List<Animal>> getAnimals() {
-		// find
-		List<Animal> animals = this.animalRepository.findAll();
-		return ResponseEntity.ok().body(animals);
+	public ResponseEntity<?> getAnimals(@PathVariable(name="zooId") Long zooId) {
+		// get zoo
+		Map zooMap = getZoo(zooId);
+		if(zooMap.get("status").toString().equals("0"))
+			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
+		else {
+			// create
+			Map<String, Object> map = new LinkedHashMap<String, Object>();
+			// find
+			List<Animal> animals = this.webService.getAllAnimals(zooId);
+			map.put("status",1);
+			map.put("data",animals);
+			// return
+			return new ResponseEntity<>(map, HttpStatus.OK);
+		}
 	}
 
 	// Read 1
 	@GetMapping("/{id}")
-	public ResponseEntity<Animal> getAnimal(@PathVariable(name="id") long id ) throws ResourceNotFoundException {
-		// find
-		Animal animal = this.animalRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Animal not found for this id: " + id)
-		);
-		return ResponseEntity.ok().body(animal);
-
+	public ResponseEntity<?> getAnimal(@PathVariable(name="zooId") long zooId, @PathVariable(name="id") long id ) {
+		// get zoo
+		Map zooMap = getZoo(zooId);
+		if(zooMap.get("status").toString().equals("0"))
+			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
+		else {
+			// create
+			Map<String, Object> map = new LinkedHashMap<String, Object>();
+			// try find animal
+			try {
+				// found
+				Animal animal = this.webService.getAnimalById(id, zooId);
+				map.put("status", 1);
+				map.put("data", animal);
+				// return
+				return new ResponseEntity<>(map, HttpStatus.OK);
+			} catch (Exception e) {
+// did not find
+				map.clear();
+				map.put("status", 0);
+				map.put("message", "No animal found with Id: " + id);
+				return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+			}
+		}
 	}
 
 	// Create 1
 	@PostMapping("/")
-	public ResponseEntity<Animal> createAnimal(@RequestBody Animal animal) {
-
-		// default values
-		if(animal.getName().isBlank())
-			animal.setName("Name");
-		if(animal.getAge() == -1)
-			animal.setAge(0);
-		if(animal.getEnergy() == -1)
-			animal.setEnergy(5);
-		if(animal.getHunger() == -1)
-			animal.setHunger(0);
-		// note: isDead will default to false
-
-		// save
-		Animal savedAnimal = this.animalRepository.save(animal);
-		return ResponseEntity.status(HttpStatus.CREATED).body(savedAnimal);
+	public ResponseEntity<?> createAnimal(@PathVariable(name="zooId") long zooId, @RequestBody Animal animal) {
+		// get zoo
+		Map zooMap = getZoo(zooId);
+		if(zooMap.get("status").toString().equals("0"))
+			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
+		else {
+			// create
+			Map<String, Object> map = new LinkedHashMap<String, Object>();
+			// save
+			Animal savedAnimal = this.webService.addAnimal(animal, zooId);
+			map.put("status",1);
+			map.put("data",savedAnimal);
+			// return
+			return new ResponseEntity<>(map, HttpStatus.CREATED);
+		}
 	}
 
 	// Update 1
 	@PutMapping("/{id}")
-	public ResponseEntity<Animal> updateAnimal(@PathVariable long id, @RequestBody Animal animal) throws ResourceNotFoundException {
-		// find
-		Animal animalUpdating = this.animalRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Animal not found for this id: " + id)
-		);
-
-		// update only if new value was sent
-		if(!animal.getName().isBlank())
-			animalUpdating.setName(animal.getName());
-		if(animal.getEnergy() != -1)
-			animalUpdating.setEnergy(animal.getEnergy());
-		if(animal.getHunger() != -1)
-			animalUpdating.setHunger(animal.getHunger());
-		if(animal.getAge() != -1)
-			animalUpdating.setAge(animal.getAge());
-		if(animal.isDead())
-			animalUpdating.setDead(animal.isDead());
-
-		// save
-		Animal updatedAnimal = this.animalRepository.save(animalUpdating);
-		return ResponseEntity.ok().body(updatedAnimal);
-	}
-
-	// Delete all
-	@DeleteMapping("/")
-	public ResponseEntity<HttpStatus> deleteAnimals() {
-		this.animalRepository.deleteAll();
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> updateAnimal(@PathVariable(name="zooId") long zooId, @PathVariable long id, @RequestBody Animal animal) throws ResourceNotFoundException {
+		// get zoo
+		Map zooMap = getZoo(zooId);
+		if(zooMap.get("status").toString().equals("0"))
+			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
+		else {
+			// create
+			Map<String, Object> map = new LinkedHashMap<String, Object>();
+			// save
+			Animal updatedAnimal = this.webService.modifyAnimal(id, animal, zooId);
+			map.put("status", 1);
+			map.put("data",updatedAnimal);
+			// return
+			return new ResponseEntity<>(map, HttpStatus.OK);
+		}
 	}
 
 	// Delete 1
 	@DeleteMapping("/{id}")
-	public ResponseEntity<HttpStatus> deleteAnimal(@PathVariable long id) {
-		this.animalRepository.deleteById(id);
-		return ResponseEntity.ok().build();
+	public ResponseEntity<?> deleteAnimal(@PathVariable(name="zooId") long zooId, @PathVariable long id) {
+		// get zoo
+		Map zooMap = getZoo(zooId);
+		if(zooMap.get("status").toString().equals("0"))
+			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
+		else {
+			// create
+			Map<String, Object> map = new LinkedHashMap<String, Object>();
+			// try delete
+			try {
+				// deleted
+				this.webService.deleteAnimalById(id, zooId);
+				map.put("status", 1);
+				// return
+				return new ResponseEntity<>(map, HttpStatus.OK);
+			} catch (Exception e) {
+				map.clear();
+				map.put("status",0);
+				map.put("message", "No animal found with Id: " + id);
+				return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
+			}
+
+		}
 	}
+
+	// Delete all
+	@DeleteMapping("/")
+	public ResponseEntity<?> deleteAnimals(@PathVariable(name="zooId") long zooId) {
+		// get zoo
+		Map zooMap = getZoo(zooId);
+		if(zooMap.get("status").toString().equals("0"))
+			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
+		else {
+			// create
+			Map<String, Object> map = new LinkedHashMap<String, Object>();
+			// delete
+			this.webService.deleteAllAnimals(zooId);
+			map.put("status",1);
+			// return
+			return new ResponseEntity<>(map, HttpStatus.OK);
+		}
+	}
+
+	// helper functions
+
+	public Map<String, Object> getZoo(Long zooId) {
+		// begin
+		Map<String, Object> map = new LinkedHashMap<>();
+		// try find
+		try {
+			// found
+			Zoo zoo = this.webService.getZooById(zooId);
+			map.put("status",1);
+			map.put("data",zoo);
+		} catch (Exception e) {
+			map.clear();
+			map.put("status",0);
+			map.put("message","No zoo found with id: " + zooId);
+		}
+		return map;
+	}
+
 
 }

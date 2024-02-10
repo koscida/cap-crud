@@ -87,6 +87,7 @@ const AnimalList = ({ isEditing = false }) => {
 						{isEditing && animals ? (
 							<AnimalEdit
 								animal={findSelectedAnimal(animals, selectedId)}
+								refreshList={pullList}
 							/>
 						) : (
 							<AnimalView

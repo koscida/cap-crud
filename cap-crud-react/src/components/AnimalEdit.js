@@ -16,7 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { styles } from "../css-common";
 import AnimalList from "./AnimalList";
 
-const AnimalEdit = ({ animal }) => {
+const AnimalEdit = ({ animal, refreshList }) => {
 	console.log("--AnimalEdit-- animal: ", animal);
 	const [animalEdits, setAnimalEdits] = useState({ ...animal });
 	const [isSnackbarSaveOpen, setIsSnackbarSaveOpen] = useState(false);
@@ -45,6 +45,10 @@ const AnimalEdit = ({ animal }) => {
 				// console.log(res);
 				// save
 				setIsSnackbarSaveOpen(true);
+				// refresh
+				refreshList();
+				// reload
+				navigate(`/animals/${animal.id}`);
 			})
 			.catch((e) => console.log(e));
 	};

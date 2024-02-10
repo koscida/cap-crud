@@ -96,7 +96,9 @@ function AnimalView({ animal }) {
 							<Box>
 								<Button
 									variant="outlined"
-									href={`/animals/${animal.id}/edit`}
+									onClick={() =>
+										navigate(`/animals/${animal.id}/edit`)
+									}
 									size="small"
 									sx={{ margin: "0.5rem 0.5rem 0 0" }}
 								>
