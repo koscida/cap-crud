@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import animalDataService from "../services/AnimalDataService";
+import animalDataService from "../../services/AnimalDataService";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { styles } from "../css-common";
+import { styles } from "../../css-common";
 import AnimalList from "./AnimalList";
 
 const AnimalEdit = ({ animal, refreshList }) => {

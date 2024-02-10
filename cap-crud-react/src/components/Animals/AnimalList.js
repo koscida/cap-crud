@@ -9,7 +9,7 @@ import {
 import { styled } from "@mui/material/styles";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import animalDataService from "../services/AnimalDataService";
+import animalDataService from "../../services/AnimalDataService";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import AnimalView from "./AnimalView";
 import AnimalEdit from "./AnimalEdit";

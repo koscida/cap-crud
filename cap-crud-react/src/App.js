@@ -2,11 +2,11 @@ import "./App.css";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { Box, Container } from "@mui/material";
 import { MUIResponsiveAppBar } from "./components/MUIResponsiveAppBar";
-import AnimalList from "./components/AnimalList";
+import AnimalList from "./components/Animals/AnimalList";
 import Home from "./components/Home";
-import AnimalNew from "./components/AnimalNew";
-import AnimalView from "./components/AnimalView";
-import AnimalEdit from "./components/AnimalEdit";
+import AnimalNew from "./components/Animals/AnimalNew";
+import AnimalView from "./components/Animals/AnimalView";
+import AnimalEdit from "./components/Animals/AnimalEdit";
 
 // app created from the following tutorial:
 // https://www.bezkoder.com/react-material-ui-examples-crud/

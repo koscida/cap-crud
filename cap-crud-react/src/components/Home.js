@@ -1,5 +1,5 @@
 import React from "react";
-import AnimalList from "./AnimalList";
+import AnimalList from "./Animals/AnimalList";
 
 const Home = () => {
 	return (
