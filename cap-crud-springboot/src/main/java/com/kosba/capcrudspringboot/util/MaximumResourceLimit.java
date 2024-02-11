@@ -4,11 +4,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-public class MaximumAnimalsPerDay extends Exception{
+public class MaximumResourceLimit extends Exception{
 
     private static final Long serialVersionUID = 1L;
 
-    public MaximumAnimalsPerDay(String message) {
+    public MaximumResourceLimit(String message) {
         super(message);
     }
 

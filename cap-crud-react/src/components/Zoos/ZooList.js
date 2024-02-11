@@ -1,5 +1,5 @@
 import { TransitEnterexitTwoTone } from "@mui/icons-material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import zooDataService from "../../services/ZooDataService";
 import {
@@ -10,25 +10,48 @@ import {
 	ListItemText,
 	Paper,
 } from "@mui/material";
+import ListView from "../common/ListView";
+import ZooEdit from "./ZooEdit";
+import ZooView from "./ZooView";
 
-const ZooList = () => {
+// helpers
+
+const findSelectedZoo = (list, selectedId) => {
+	return list && selectedId ? list.find((a) => a.id === selectedId) : null;
+};
+
+const ZooList = ({ isEditing = false }) => {
 	let { zooId } = useParams();
-	let navigate = useNavigate();
 
 	const [zoos, setZoos] = useState([]);
 	const [selectedZooId, setSelectedZooId] = useState(parseInt(zooId));
 
-	useState(() => {
+	let navigate = useNavigate();
+
+	// on load
+
+	useEffect(() => {
+		if (!zoos || zoos.length === 0) pullList();
+		console.log(
+			"--ZooList-- zoos: ",
+			zoos,
+			" selectedZooId: ",
+			selectedZooId
+		);
+	}, [zooId]);
+
+	// get list
+	const pullList = () => {
+		// send
 		zooDataService
-			.getAll(selectedZooId)
+			.getAll()
 			.then((res) => {
 				console.log(res);
-				setZoos(res.data);
+				// set the list
+				setZoos(res.data.data);
 			})
-			.catch((e) => {
-				console.log(e);
-			});
-	}, []);
+			.catch((e) => console.log(e));
+	};
 
 	return (
 		<>
@@ -36,25 +59,29 @@ const ZooList = () => {
 				<h1>Zoo List</h1>
 			</Box>
 			<Grid container spacing={2}>
-				<Grid item="true" xs={4}>
-					<Paper>
-						<List>
-							{zoos.map((zoo) => (
-								<ListItemButton
-									key={zoo.id}
-									selected={selectedZooId === zoo.id}
-									sx={{ borderBottom: "1px solid #eee" }}
-									onClick={(e) =>
-										navigate(`/zoos/${selectedZooId}`)
-									}
-								>
-									<ListItemText
-										primary={`${zoo.name} (${zoo.id})`}
-									/>
-								</ListItemButton>
-							))}
-						</List>
-					</Paper>
+				<Grid item={true} xs={4}>
+					<ListView
+						listData={zoos}
+						selectedItemId={selectedZooId}
+						handleOnClick={(clickedId) =>
+							navigate(`/zoos/${clickedId}`)
+						}
+					/>
+				</Grid>
+
+				<Grid item={true} xs={8}>
+					<Box>
+						{isEditing && zoos ? (
+							<ZooEdit
+								zoo={findSelectedZoo(zoos, selectedZooId)}
+								refreshList={pullList}
+							/>
+						) : (
+							<ZooView
+								zoo={findSelectedZoo(zoos, selectedZooId)}
+							/>
+						)}
+					</Box>
 				</Grid>
 			</Grid>
 		</>

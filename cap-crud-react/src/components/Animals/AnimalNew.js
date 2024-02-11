@@ -26,7 +26,7 @@ const AnimalNew = () => {
 			.getAll()
 			.then((res) => {
 				console.log(res);
-				setAnimals(res.data);
+				setAnimals(res.data.data);
 			})
 			.catch((e) => console.log(e));
 	}, []);
@@ -70,7 +70,7 @@ const AnimalNew = () => {
 				<h1>New Animal</h1>
 			</Box>
 			<Grid container spacing={2}>
-				<Grid item="true" xs={6}>
+				<Grid item={true} xs={6}>
 					<Box>
 						<p>Add a new animal here</p>
 
@@ -99,7 +99,7 @@ const AnimalNew = () => {
 						/>
 					</Box>
 				</Grid>
-				<Grid item="true" xs={6}>
+				<Grid item={true} xs={6}>
 					<Box>
 						<h3>Zoo Rules!</h3>
 						<p>

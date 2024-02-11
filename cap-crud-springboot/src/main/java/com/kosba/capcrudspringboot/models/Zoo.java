@@ -8,9 +8,9 @@ import java.util.Objects;
 @Table(name = "ZOO")
 public class Zoo {
 	@Id
-	@Column(name = "ZOO_ID")
+	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	private Long zooId;
+	private Long id;
 
 	@Column(name = "NAME")
 	private String name;
@@ -43,8 +43,8 @@ public class Zoo {
 	// getters and setters
 
 
-	public long getZooId() {
-		return zooId;
+	public long getId() {
+		return id;
 	}
 
 	public String getName() {
@@ -70,7 +70,7 @@ public class Zoo {
 	@Override
 	public String toString() {
 		return "Zoo{" +
-				"zooId=" + zooId +
+				"id=" + id +
 				", name='" + name + '\'' +
 				", currentDay=" + currentDay +
 				'}';
@@ -81,11 +81,11 @@ public class Zoo {
 		if (this == o) return true;
 		if (!(o instanceof Zoo)) return false;
 		Zoo zoo = (Zoo) o;
-		return zooId == zoo.zooId && currentDay == zoo.currentDay && name.equals(zoo.name);
+		return id == zoo.id && currentDay == zoo.currentDay && name.equals(zoo.name);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(zooId, name, currentDay);
+		return Objects.hash(id, name, currentDay);
 	}
 }

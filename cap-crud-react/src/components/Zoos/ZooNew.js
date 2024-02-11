@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import animalDataService from "../../services/AnimalDataService";
+import zooDataService from "../../services/ZooDataService";
 import { useParams } from "react-router-dom";
 
 import {
@@ -19,19 +19,23 @@ const ZooNew = () => {
 	const initName = "";
 	const [name, setName] = useState(initName);
 	const [isSnackbarSaveOpen, setIsSnackbarSaveOpen] = useState(false);
-	const [animals, setAnimals] = useState([]);
+	const [zoos, setZoos] = useState([]);
 
 	useEffect(() => {
-		animalDataService
+		pullData();
+	}, []);
+
+	const pullData = () => {
+		zooDataService
 			.getAll()
 			.then((res) => {
 				console.log(res);
-				setAnimals(res.data);
+				setZoos(res.data.data);
 			})
 			.catch((e) => console.log(e));
-	}, []);
+	};
 
-	const createAnimal = () => {
+	const createZoo = () => {
 		// create data to send
 		const data = {
 			name,
@@ -39,7 +43,7 @@ const ZooNew = () => {
 		console.log(data);
 
 		// send
-		animalDataService
+		zooDataService
 			.create(data)
 			.then((res) => {
 				console.log(res);
@@ -47,6 +51,8 @@ const ZooNew = () => {
 				setName(initName);
 				// save
 				setIsSnackbarSaveOpen(true);
+				// re-pull
+				pullData();
 			})
 			.catch((e) => console.log(e));
 	};
@@ -67,12 +73,12 @@ const ZooNew = () => {
 	return (
 		<>
 			<Box>
-				<h1>New Animal</h1>
+				<h1>New Zoo</h1>
 			</Box>
 			<Grid container spacing={2}>
-				<Grid item="true" xs={6}>
+				<Grid item={true} xs={6}>
 					<Box>
-						<p>Add a new animal here</p>
+						<p>Add a new zoo here</p>
 
 						<Box sx={{ padding: "1rem 0" }}>
 							<TextField
@@ -86,7 +92,7 @@ const ZooNew = () => {
 							/>
 						</Box>
 
-						<Button onClick={createAnimal} variant="contained">
+						<Button onClick={createZoo} variant="contained">
 							Create
 						</Button>
 
@@ -99,13 +105,16 @@ const ZooNew = () => {
 						/>
 					</Box>
 				</Grid>
-				<Grid item="true" xs={6}>
+				<Grid item={true} xs={6}>
+					<Box>
+						<p>
+							<strong>Zoos created:</strong>&nbsp;
+							{zoos.length}
+						</p>
+					</Box>
 					<Box>
 						<h3>Zoo Rules!</h3>
-						<p>
-							Only 10 animals can be added a day, once 10 animals
-							are added, the next day will happen
-						</p>
+						<p>Only 5 zoos per user!</p>
 					</Box>
 				</Grid>
 			</Grid>

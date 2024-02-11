@@ -58,12 +58,21 @@ public class ZooController {
 	public ResponseEntity<?> createZoo(@RequestBody Zoo zoo) {
 		// begin
 		Map<String, Object> map = new LinkedHashMap<>();
-		// create
-		Zoo newZoo = this.webService.createNewZoo(zoo);
-		map.put("status", HttpStatus.CREATED);
-		map.put("data",newZoo);
-		// return
-		return new ResponseEntity(map, HttpStatus.CREATED);
+		// try create
+		try {
+			// create
+			Zoo newZoo = this.webService.createNewZoo(zoo);
+			map.put("status", HttpStatus.CREATED);
+			map.put("data", newZoo);
+			// return
+			return new ResponseEntity(map, HttpStatus.CREATED);
+		} catch (Exception e) {
+			map.clear();
+			map.put("status", HttpStatus.NOT_ACCEPTABLE);
+			map.put("message", "Maximum number of zoos created");
+			// return
+			return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
+		}
 	}
 
 	// update

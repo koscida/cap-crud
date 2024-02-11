@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import animalDataService from "../../services/AnimalDataService";
+import zooDataService from "../../services/ZooDataService";
 import {
 	Box,
 	Button,
@@ -12,34 +12,22 @@ import {
 	Grid,
 	Paper,
 } from "@mui/material";
-import List from "./AnimalList";
 
-function ZooView({ animal }) {
+function ZooView({ zoo }) {
 	const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
-	// const [animal, setAnimal] = useState(animal);
+	// const [zoo, setZoo] = useState(zoo);
 	// let { id } = useParams();
 
 	let navigate = useNavigate();
 
-	// useEffect(() => {
-	// 	if(!animal)
-	// 	animalDataService
-	// 		.get(id)
-	// 		.then((res) => {
-	// 			// console.log(`get(${id}): `, res);
-	// 			setAnimal(res.data);
-	// 		})
-	// 		.catch((e) => console.log(e));
-	// }, []);
-
 	const handleDelete = () => {
 		// make delete call
-		animalDataService
-			.delete(animal.id)
+		zooDataService
+			.delete(zoo.id)
 			.then((res) => {
-				console.log(res);
-				// go back to the animal list
-				navigate("/animals");
+				// console.log(res);
+				// go back to the zoo list
+				navigate("/zoos");
 			})
 			.catch((e) => console.log(e));
 
@@ -54,9 +42,7 @@ function ZooView({ animal }) {
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
 		>
-			<DialogTitle id="alert-dialog-title">
-				{"Delete Animal?"}
-			</DialogTitle>
+			<DialogTitle id="alert-dialog-title">{"Delete Zoo?"}</DialogTitle>
 			<DialogContent>
 				<DialogContentText id="alert-dialog-description">
 					Warning! Deleted items cannot be recovered!
@@ -76,28 +62,28 @@ function ZooView({ animal }) {
 	return (
 		<>
 			<Box>
-				{animal ? (
+				{zoo ? (
 					<>
 						<Paper sx={{ padding: "1rem" }}>
 							<Box>
-								<h2>{animal.name}</h2>
+								<h2>{zoo.name}</h2>
 							</Box>
 							<Box>
 								<Box>
-									<strong>Age</strong>: {animal.age}
+									<strong>Age</strong>: {zoo.age}
 								</Box>
 								<Box>
-									<strong>Energy</strong>: {animal.energy}
+									<strong>Energy</strong>: {zoo.energy}
 								</Box>
 								<Box>
-									<strong>Hunger</strong>: {animal.hunger}
+									<strong>Hunger</strong>: {zoo.hunger}
 								</Box>
 							</Box>
 							<Box>
 								<Button
 									variant="outlined"
 									onClick={() =>
-										navigate(`/animals/${animal.id}/edit`)
+										navigate(`/zoos/${zoo.id}/edit`)
 									}
 									size="small"
 									sx={{ margin: "0.5rem 0.5rem 0 0" }}

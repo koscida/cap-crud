@@ -4,11 +4,9 @@ import com.kosba.capcrudspringboot.models.Animal;
 import com.kosba.capcrudspringboot.models.AnimalRepository;
 import com.kosba.capcrudspringboot.models.Zoo;
 import com.kosba.capcrudspringboot.models.ZooRepository;
-import com.kosba.capcrudspringboot.util.MaximumAnimalsPerDay;
+import com.kosba.capcrudspringboot.util.MaximumResourceLimit;
 import com.kosba.capcrudspringboot.util.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,11 +43,11 @@ public class WebService {
 		}
 	}
 
-	public Animal addAnimal(Animal animal, Long zooId) throws MaximumAnimalsPerDay {
-		// check birth day
+	public Animal addAnimal(Animal animal, Long zooId) throws MaximumResourceLimit {
+		// check limit 10 animals per day
 		List<Animal> animalsBornToday = this.animalRepository.findByZooIdAndBirthDay(zooId, animal.getBirthDay()).get();
 		if(animalsBornToday.size() >= 10)
-			throw new MaximumAnimalsPerDay("There are already 10 animals added for this day:" + animal.getBirthDay());
+			throw new MaximumResourceLimit("There are already 10 animals added for this day:" + animal.getBirthDay());
 
 		// set zoo id
 		animal.setZooId(zooId);
@@ -142,7 +140,12 @@ public class WebService {
 		return zoo;
 	}
 
-	public Zoo createNewZoo(Zoo zoo) {
+	public Zoo createNewZoo(Zoo zoo) throws MaximumResourceLimit {
+		// check max number of zoos
+		List<Zoo> zoos = this.zooRepository.findAll();
+		if(zoos.size() >= 5)
+			throw new MaximumResourceLimit("Maximum number of zoos created");
+
 		// set defaults
 		if(zoo.getName().isBlank())
 			zoo.setName("Unnamed Zoo");

@@ -4,17 +4,17 @@ class AnimalDataService {
 	getAll(zooId) {
 		return http.get(`/zoos/${zooId}/animals/`);
 	}
-	get(zooId, id) {
-		return http.get(`/zoos/${zooId}/animals/${id}`);
+	get(zooId, animalId) {
+		return http.get(`/zoos/${zooId}/animals/${animalId}`);
 	}
 	create(zooId, data) {
 		return http.post(`/zoos/${zooId}/animals/`, data);
 	}
-	update(zooId, id, data) {
-		return http.put(`/zoos/${zooId}/animals/${id}`, data);
+	update(zooId, animalId, data) {
+		return http.put(`/zoos/${zooId}/animals/${animalId}`, data);
 	}
-	delete(zooId, id) {
-		return http.delete(`/zoos/${zooId}/animals/${id}`);
+	delete(zooId, animalId) {
+		return http.delete(`/zoos/${zooId}/animals/${animalId}`);
 	}
 	deleteAll(zooId) {
 		return http.delete(`/zoos/${zooId}/animals/`);

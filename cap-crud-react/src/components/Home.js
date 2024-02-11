@@ -1,6 +1,6 @@
 import React from "react";
-import AnimalList from "./Animals/AnimalList";
-import ZooList from "./Zoos/ZooList";
+import AnimalList from "./animals/AnimalList";
+import ZooList from "./zoos/ZooList";
 
 const Home = () => {
 	return (

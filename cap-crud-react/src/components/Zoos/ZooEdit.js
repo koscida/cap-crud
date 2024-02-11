@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import animalDataService from "../../services/AnimalDataService";
+import zooDataService from "../../services/ZooDataService";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
@@ -13,34 +13,31 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-import { styles } from "../../css-common";
-import AnimalList from "./AnimalList";
-
-const ZooEdit = ({ animal, refreshList }) => {
-	console.log("--AnimalEdit-- animal: ", animal);
-	const [animalEdits, setAnimalEdits] = useState({ ...animal });
+const ZooEdit = ({ zoo, refreshList }) => {
+	console.log("--ZooEdit-- zoo: ", zoo);
+	const [zooEdits, setZooEdits] = useState({ ...zoo });
 	const [isSnackbarSaveOpen, setIsSnackbarSaveOpen] = useState(false);
 	let navigate = useNavigate();
 
 	useEffect(() => {
-		setAnimalEdits(animal);
-	}, [animal]);
+		setZooEdits(zoo);
+	}, [zoo]);
 
-	const cancelEditAnimal = () => {
-		navigate(`/animals/${animal.id}`);
+	const cancelEditZoo = () => {
+		navigate(`/zoos/${zoo.id}`);
 	};
 
-	const saveAnimal = () => {
+	const saveZoo = () => {
 		// create data to send
 		const data = {
-			id: animal.id,
-			name: animalEdits.name,
+			id: zoo.id,
+			name: zooEdits.name,
 		};
 		// console.log(data);
 
 		// send
-		animalDataService
-			.update(animal.id, data)
+		zooDataService
+			.update(zoo.id, data)
 			.then((res) => {
 				// console.log(res);
 				// save
@@ -48,7 +45,7 @@ const ZooEdit = ({ animal, refreshList }) => {
 				// refresh
 				refreshList();
 				// reload
-				navigate(`/animals/${animal.id}`);
+				navigate(`/zoos/${zoo.id}`);
 			})
 			.catch((e) => console.log(e));
 	};
@@ -66,23 +63,23 @@ const ZooEdit = ({ animal, refreshList }) => {
 		</>
 	);
 
-	console.log("--AnimalEdit-- animalEdits: ", animalEdits);
+	console.log("--ZooEdit-- zooEdits: ", zooEdits);
 	return (
 		<>
 			<Box>
-				{animal && animalEdits ? (
+				{zoo && zooEdits ? (
 					<>
-						<h3>{animal.name}</h3>
+						<h3>{zoo.name}</h3>
 
 						<Box sx={{ padding: "1rem 0" }}>
 							<TextField
 								id="name"
 								label="Name"
-								value={animalEdits.name}
+								value={zooEdits.name}
 								variant="filled"
 								onChange={(event) => {
-									setAnimalEdits({
-										...animalEdits,
+									setZooEdits({
+										...zooEdits,
 										name: event.target.value,
 									});
 								}}
@@ -90,13 +87,10 @@ const ZooEdit = ({ animal, refreshList }) => {
 						</Box>
 
 						<Box>
-							<Button
-								onClick={cancelEditAnimal}
-								variant="outlined"
-							>
+							<Button onClick={cancelEditZoo} variant="outlined">
 								Cancel
 							</Button>
-							<Button onClick={saveAnimal} variant="contained">
+							<Button onClick={saveZoo} variant="contained">
 								Save
 							</Button>
 						</Box>

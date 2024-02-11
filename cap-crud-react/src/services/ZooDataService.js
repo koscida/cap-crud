@@ -2,22 +2,22 @@ import http from "./http-common";
 
 class ZooDataService {
 	getAll() {
-		return http.get(`/animals/`);
+		return http.get(`/zoos/`);
 	}
-	get(id) {
-		return http.get(`/animals/${id}`);
+	get(zooId) {
+		return http.get(`/zoos/${zooId}`);
 	}
 	create(data) {
-		return http.post(`/animals/`, data);
+		return http.post(`/zoos/`, data);
 	}
-	update(id, data) {
-		return http.put(`/animals/${id}`, data);
+	update(zooId, data) {
+		return http.put(`/zoos/${zooId}`, data);
 	}
-	delete(id) {
-		return http.delete(`/animals/${id}`);
+	delete(zooId) {
+		return http.delete(`/zoos/${zooId}`);
 	}
 	deleteAll() {
-		return http.delete(`/animals/`);
+		return http.delete(`/zoos/`);
 	}
 	s;
 }

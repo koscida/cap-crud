@@ -13,6 +13,7 @@ import animalDataService from "../../services/AnimalDataService";
 import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import AnimalView from "./AnimalView";
 import AnimalEdit from "./AnimalEdit";
+import ListView from "../common/ListView";
 
 // helpers
 
@@ -23,10 +24,10 @@ const findSelectedAnimal = (animals, selectedId) => {
 };
 
 const AnimalList = ({ isEditing = false }) => {
-	let { id, zooId } = useParams();
+	let { zooId, animalId } = useParams();
 
 	const [animals, setAnimals] = useState([]);
-	const [selectedId, setSelectedId] = useState(parseInt(id));
+	const [selectedAnimalId, setSelectedId] = useState(parseInt(animalId));
 	const [selectedZooId, setZooId] = useState(parseInt(zooId));
 
 	let navigate = useNavigate();
@@ -35,14 +36,13 @@ const AnimalList = ({ isEditing = false }) => {
 
 	useEffect(() => {
 		if (!animals || animals.length === 0) pullList();
-		setSelectedId(parseInt(id));
 		console.log(
 			"--AnimalList-- animals: ",
 			animals,
 			" selectedId: ",
-			selectedId
+			selectedAnimalId
 		);
-	}, [id, animals]);
+	}, [animalId, animals]);
 
 	// get list
 	const pullList = () => {
@@ -52,7 +52,7 @@ const AnimalList = ({ isEditing = false }) => {
 			.then((res) => {
 				console.log(res);
 				// set the animal list
-				setAnimals(res.data);
+				setAnimals(res.data.data);
 			})
 			.catch((e) => console.log(e));
 	};
@@ -63,37 +63,32 @@ const AnimalList = ({ isEditing = false }) => {
 				<h1>Animal List</h1>
 			</Box>
 			<Grid container spacing={2}>
-				<Grid item="true" xs={4}>
-					<Paper>
-						<List>
-							{animals.map((animal) => (
-								<ListItemButton
-									key={animal.id}
-									selected={selectedId === animal.id}
-									sx={{ borderBottom: "1px solid #eee" }}
-									onClick={(e) =>
-										navigate(`/animals/${animal.id}`)
-									}
-								>
-									<ListItemText
-										primary={`${animal.name} (${animal.id})`}
-									/>
-								</ListItemButton>
-							))}
-						</List>
-					</Paper>
+				<Grid item={true} xs={4}>
+					<ListView
+						listData={animals}
+						selectedItemId={selectedAnimalId}
+						handleOnClick={(clickedId) =>
+							navigate(`/animals/${clickedId}`)
+						}
+					/>
 				</Grid>
 
-				<Grid item="true" xs={8}>
+				<Grid item={true} xs={8}>
 					<Box>
 						{isEditing && animals ? (
 							<AnimalEdit
-								animal={findSelectedAnimal(animals, selectedId)}
+								animal={findSelectedAnimal(
+									animals,
+									selectedAnimalId
+								)}
 								refreshList={pullList}
 							/>
 						) : (
 							<AnimalView
-								animal={findSelectedAnimal(animals, selectedId)}
+								animal={findSelectedAnimal(
+									animals,
+									selectedAnimalId
+								)}
 							/>
 						)}
 					</Box>
