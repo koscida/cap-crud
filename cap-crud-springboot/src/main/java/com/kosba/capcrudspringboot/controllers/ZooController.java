@@ -27,8 +27,8 @@ public class ZooController {
 		Map<String, Object> map = new LinkedHashMap<>();
 		// get
 		List<Zoo> zoos = this.webService.getAllZoos();
-		map.put("status", 1);
-		map.put("data",zoos);
+		map.put("status", zoos.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK);
+		map.put("data", zoos);
 		// return
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
@@ -42,12 +42,12 @@ public class ZooController {
 		try {
 			// found
 			Zoo zoo = this.webService.getZooById(id);
-			map.put("status",1);
+			map.put("status",HttpStatus.OK);
 			map.put("data",zoo);
 			return new ResponseEntity<>(map, HttpStatus.OK);
 		} catch (Exception e) {
 			map.clear();
-			map.put("status",0);
+			map.put("status",HttpStatus.NOT_FOUND);
 			map.put("message","No zoo found with id: " + id);
 			return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 		}
@@ -60,7 +60,7 @@ public class ZooController {
 		Map<String, Object> map = new LinkedHashMap<>();
 		// create
 		Zoo newZoo = this.webService.createNewZoo(zoo);
-		map.put("status", 1);
+		map.put("status", HttpStatus.CREATED);
 		map.put("data",newZoo);
 		// return
 		return new ResponseEntity(map, HttpStatus.CREATED);
@@ -73,7 +73,7 @@ public class ZooController {
 		Map<String, Object> map = new LinkedHashMap<>();
 		// update
 		Zoo updatedZoo = this.webService.modifyZoo(id, zoo);
-		map.put("status", 1);
+		map.put("status", HttpStatus.OK);
 		map.put("data",updatedZoo);
 		// return
 		return new ResponseEntity<>(map, HttpStatus.OK);
@@ -86,7 +86,7 @@ public class ZooController {
 		Map<String, Object> map = new LinkedHashMap<>();
 		// delete
 		this.webService.deleteZooById(id);
-		map.put("status", 1);
+		map.put("status", HttpStatus.OK);
 		// return
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
@@ -98,7 +98,7 @@ public class ZooController {
 		Map<String, Object> map = new LinkedHashMap<>();
 		// delete
 		this.webService.deleteAllZoos();
-		map.put("status", 1);
+		map.put("status", HttpStatus.OK);
 		// return
 		return new ResponseEntity<>(map, HttpStatus.OK);
 	}
