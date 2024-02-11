@@ -1,5 +1,6 @@
 import React from "react";
 import AnimalList from "./Animals/AnimalList";
+import ZooList from "./Zoos/ZooList";
 
 const Home = () => {
 	return (
@@ -7,9 +8,10 @@ const Home = () => {
 			<h1>Animals Home</h1>
 			<p>Features:</p>
 			<ul>
+				<li>Add, edit, delete zoos</li>
 				<li>Add, edit, delete animals</li>
 			</ul>
-			<AnimalList />
+			<ZooList />
 		</>
 	);
 };

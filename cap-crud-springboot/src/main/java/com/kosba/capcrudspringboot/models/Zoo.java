@@ -11,8 +11,10 @@ public class Zoo {
 	@Column(name = "ZOO_ID")
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long zooId;
+
 	@Column(name = "NAME")
 	private String name;
+
 	@Column(name = "CURRENT_DAY")
 	private int currentDay;
 
@@ -30,6 +32,11 @@ public class Zoo {
 
 	public Zoo(String name, int currentDay) {
 		this.name = name;
+		this.currentDay = currentDay;
+	}
+
+	public Zoo(int currentDay) {
+		this.name = "";
 		this.currentDay = currentDay;
 	}
 

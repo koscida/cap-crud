@@ -4,6 +4,7 @@ import com.kosba.capcrudspringboot.models.Animal;
 import com.kosba.capcrudspringboot.models.AnimalRepository;
 import com.kosba.capcrudspringboot.models.Zoo;
 import com.kosba.capcrudspringboot.models.ZooRepository;
+import com.kosba.capcrudspringboot.util.MaximumAnimalsPerDay;
 import com.kosba.capcrudspringboot.util.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class WebService {
 
 	public List<Animal> getAllAnimals(Long zooId) {
 		// find
-		List<Animal> animals = this.animalRepository.findAll();
+		List<Animal> animals = this.animalRepository.findByZooId(zooId).get();
 		// return
 		return animals;
 	}
@@ -44,7 +45,12 @@ public class WebService {
 		}
 	}
 
-	public Animal addAnimal(Animal animal, Long zooId) {
+	public Animal addAnimal(Animal animal, Long zooId) throws MaximumAnimalsPerDay {
+		// check birth day
+		List<Animal> animalsBornToday = this.animalRepository.findByZooIdAndBirthDay(zooId, animal.getBirthDay()).get();
+		if(animalsBornToday.size() >= 10)
+			throw new MaximumAnimalsPerDay("There are already 10 animals added for this day:" + animal.getBirthDay());
+
 		// set zoo id
 		animal.setZooId(zooId);
 		// set default values
@@ -57,6 +63,8 @@ public class WebService {
 		if(animal.getHunger() == -1)
 			animal.setHunger(0);
 		// note: isDead will default to false
+
+
 
 		// save
 		Animal savedAnimal = this.animalRepository.save(animal);
@@ -86,6 +94,7 @@ public class WebService {
 				animalUpdating.setAge(animal.getAge());
 			if (animal.isDead())
 				animalUpdating.setDead(animal.isDead());
+			// note: do not update zooId or birthDay, those will never change
 
 			// save
 			Animal updatedAnimal = this.animalRepository.save(animalUpdating);
@@ -172,5 +181,9 @@ public class WebService {
 		// delete
 		this.zooRepository.deleteAll();
 	}
+
+	//
+	// helper functions
+
 
 }

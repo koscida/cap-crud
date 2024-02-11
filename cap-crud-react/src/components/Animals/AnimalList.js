@@ -14,7 +14,7 @@ import Grid from "@mui/material/Unstable_Grid2"; // Grid version 2
 import AnimalView from "./AnimalView";
 import AnimalEdit from "./AnimalEdit";
 
-// helper
+// helpers
 
 const findSelectedAnimal = (animals, selectedId) => {
 	return animals && selectedId
@@ -23,9 +23,11 @@ const findSelectedAnimal = (animals, selectedId) => {
 };
 
 const AnimalList = ({ isEditing = false }) => {
-	let { id } = useParams();
+	let { id, zooId } = useParams();
+
 	const [animals, setAnimals] = useState([]);
 	const [selectedId, setSelectedId] = useState(parseInt(id));
+	const [selectedZooId, setZooId] = useState(parseInt(zooId));
 
 	let navigate = useNavigate();
 
@@ -46,7 +48,7 @@ const AnimalList = ({ isEditing = false }) => {
 	const pullList = () => {
 		// send
 		animalDataService
-			.getAll()
+			.getAll(selectedZooId)
 			.then((res) => {
 				console.log(res);
 				// set the animal list

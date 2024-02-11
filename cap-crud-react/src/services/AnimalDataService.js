@@ -1,23 +1,23 @@
 import http from "./http-common";
 
 class AnimalDataService {
-	getAll() {
-		return http.get(`/animals/`);
+	getAll(zooId) {
+		return http.get(`/zoos/${zooId}/animals/`);
 	}
-	get(id) {
-		return http.get(`/animals/${id}`);
+	get(zooId, id) {
+		return http.get(`/zoos/${zooId}/animals/${id}`);
 	}
-	create(data) {
-		return http.post(`/animals/`, data);
+	create(zooId, data) {
+		return http.post(`/zoos/${zooId}/animals/`, data);
 	}
-	update(id, data) {
-		return http.put(`/animals/${id}`, data);
+	update(zooId, id, data) {
+		return http.put(`/zoos/${zooId}/animals/${id}`, data);
 	}
-	delete(id) {
-		return http.delete(`/animals/${id}`);
+	delete(zooId, id) {
+		return http.delete(`/zoos/${zooId}/animals/${id}`);
 	}
-	deleteAll() {
-		return http.delete(`/animals/`);
+	deleteAll(zooId) {
+		return http.delete(`/zoos/${zooId}/animals/`);
 	}
 	s;
 }

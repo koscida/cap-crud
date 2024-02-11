@@ -21,8 +21,8 @@ import { Link } from "react-router-dom";
 const pageName = "ANIMALS";
 const NameIcon = PetsIcon;
 const pages = [
-	["Animal List", "/animals"],
-	["New Animal", "/animals/new"],
+	["Zoo List", "/zoos"],
+	["New Zoo", "/zoos/new"],
 ];
 const settings = ["Profile", "Account", "Logout"];
 

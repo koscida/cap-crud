@@ -2,11 +2,9 @@ import "./App.css";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { Box, Container } from "@mui/material";
 import { MUIResponsiveAppBar } from "./components/MUIResponsiveAppBar";
-import AnimalList from "./components/Animals/AnimalList";
 import Home from "./components/Home";
+import AnimalList from "./components/Animals/AnimalList";
 import AnimalNew from "./components/Animals/AnimalNew";
-import AnimalView from "./components/Animals/AnimalView";
-import AnimalEdit from "./components/Animals/AnimalEdit";
 
 // app created from the following tutorial:
 // https://www.bezkoder.com/react-material-ui-examples-crud/
@@ -20,14 +18,20 @@ function App() {
 					<BrowserRouter>
 						<Routes>
 							<Route path="/" element={<Home />} />
-							<Route path="animals" element={<AnimalList />} />
-							<Route path="animals/new" element={<AnimalNew />} />
 							<Route
-								path="animals/:id/"
+								path="zoos/:zooId/animals"
 								element={<AnimalList />}
 							/>
 							<Route
-								path="animals/:id/edit"
+								path="zoos/:zooId/animals/new"
+								element={<AnimalNew />}
+							/>
+							<Route
+								path="zoos/:zooId/animals/:id/"
+								element={<AnimalList />}
+							/>
+							<Route
+								path="zoos/:zooId/animals/:id/edit"
 								element={<AnimalList isEditing={true} />}
 							/>
 						</Routes>

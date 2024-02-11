@@ -32,7 +32,7 @@ public class AnimalController {
 	@GetMapping("/")
 	public ResponseEntity<?> getAnimals(@PathVariable(name="zooId") Long zooId) {
 		// get zoo
-		Map zooMap = getZoo(zooId);
+		Map<String, Object> zooMap = getZoo(zooId);
 		if(zooMap.get("status").toString().equals("0"))
 			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
 		else {
@@ -51,7 +51,7 @@ public class AnimalController {
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getAnimal(@PathVariable(name="zooId") long zooId, @PathVariable(name="id") long id ) {
 		// get zoo
-		Map zooMap = getZoo(zooId);
+		Map<String, Object> zooMap = getZoo(zooId);
 		if(zooMap.get("status").toString().equals("0"))
 			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
 		else {
@@ -79,18 +79,25 @@ public class AnimalController {
 	@PostMapping("/")
 	public ResponseEntity<?> createAnimal(@PathVariable(name="zooId") long zooId, @RequestBody Animal animal) {
 		// get zoo
-		Map zooMap = getZoo(zooId);
+		Map<String, Object> zooMap = getZoo(zooId);
 		if(zooMap.get("status").toString().equals("0"))
 			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
 		else {
 			// create
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
-			// save
-			Animal savedAnimal = this.webService.addAnimal(animal, zooId);
-			map.put("status",1);
-			map.put("data",savedAnimal);
-			// return
-			return new ResponseEntity<>(map, HttpStatus.CREATED);
+			// try to save
+			try {
+				Animal savedAnimal = this.webService.addAnimal(animal, zooId);
+				map.put("status", 1);
+				map.put("data", savedAnimal);
+				// return
+				return new ResponseEntity<>(map, HttpStatus.CREATED);
+			} catch (Exception e) {
+				map.clear();
+				map.put("status", 0);
+				map.put("message", "Maximum number of animals created today");
+				return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
+			}
 		}
 	}
 
@@ -98,7 +105,7 @@ public class AnimalController {
 	@PutMapping("/{id}")
 	public ResponseEntity<?> updateAnimal(@PathVariable(name="zooId") long zooId, @PathVariable long id, @RequestBody Animal animal) throws ResourceNotFoundException {
 		// get zoo
-		Map zooMap = getZoo(zooId);
+		Map<String, Object> zooMap = getZoo(zooId);
 		if(zooMap.get("status").toString().equals("0"))
 			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
 		else {
@@ -117,7 +124,7 @@ public class AnimalController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteAnimal(@PathVariable(name="zooId") long zooId, @PathVariable long id) {
 		// get zoo
-		Map zooMap = getZoo(zooId);
+		Map<String, Object> zooMap = getZoo(zooId);
 		if(zooMap.get("status").toString().equals("0"))
 			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
 		else {
@@ -144,7 +151,7 @@ public class AnimalController {
 	@DeleteMapping("/")
 	public ResponseEntity<?> deleteAnimals(@PathVariable(name="zooId") long zooId) {
 		// get zoo
-		Map zooMap = getZoo(zooId);
+		Map<String, Object> zooMap = getZoo(zooId);
 		if(zooMap.get("status").toString().equals("0"))
 			return new ResponseEntity<>(zooMap, HttpStatus.NOT_FOUND);
 		else {
