@@ -10,13 +10,15 @@ import {
 	DialogContentText,
 	DialogTitle,
 	Grid,
+	IconButton,
 	Paper,
+	Snackbar,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
-function ZooView({ zoo }) {
+function ZooView({ zoo, refreshList }) {
 	const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
-	// const [zoo, setZoo] = useState(zoo);
-	// let { id } = useParams();
+	const [isDeleteSnackbarOpen, setIsDeleteSnackbarOpen] = useState(false);
 
 	let navigate = useNavigate();
 
@@ -26,7 +28,11 @@ function ZooView({ zoo }) {
 			.delete(zoo.id)
 			.then((res) => {
 				// console.log(res);
-				// go back to the zoo list
+				// pop-up save
+				setIsDeleteSnackbarOpen(true);
+				// refresh list
+				refreshList();
+				// go back to the list
 				navigate("/zoos");
 			})
 			.catch((e) => console.log(e));
@@ -42,7 +48,7 @@ function ZooView({ zoo }) {
 			aria-labelledby="alert-dialog-title"
 			aria-describedby="alert-dialog-description"
 		>
-			<DialogTitle id="alert-dialog-title">{"Delete Zoo?"}</DialogTitle>
+			<DialogTitle id="alert-dialog-title">{`Delete ${zoo.name}?`}</DialogTitle>
 			<DialogContent>
 				<DialogContentText id="alert-dialog-description">
 					Warning! Deleted items cannot be recovered!
@@ -59,6 +65,20 @@ function ZooView({ zoo }) {
 		</Dialog>
 	);
 
+	const snackDeleteAction = (
+		<>
+			<IconButton
+				size="small"
+				aria-label="close"
+				color="inherit"
+				onClick={() => setIsDeleteSnackbarOpen(false)}
+			>
+				<CloseIcon fontSize="small" />
+			</IconButton>
+		</>
+	);
+
+	console.log("--ZooView--", " zoo: ", zoo);
 	return (
 		<>
 			<Box>
@@ -70,13 +90,7 @@ function ZooView({ zoo }) {
 							</Box>
 							<Box>
 								<Box>
-									<strong>Age</strong>: {zoo.age}
-								</Box>
-								<Box>
-									<strong>Energy</strong>: {zoo.energy}
-								</Box>
-								<Box>
-									<strong>Hunger</strong>: {zoo.hunger}
+									<strong>Day</strong>: {zoo.currentDay}
 								</Box>
 							</Box>
 							<Box>
@@ -98,6 +112,16 @@ function ZooView({ zoo }) {
 								>
 									Delete
 								</Button>
+								<Button
+									variant="outlined"
+									onClick={() =>
+										navigate(`/zoos/${zoo.id}/animals`)
+									}
+									size="small"
+									sx={{ margin: "0.5rem 0.5rem 0 0" }}
+								>
+									Animal List
+								</Button>
 								<DeleteAlert />
 							</Box>
 						</Paper>
@@ -105,6 +129,14 @@ function ZooView({ zoo }) {
 				) : (
 					<></>
 				)}
+
+				<Snackbar
+					open={isDeleteSnackbarOpen}
+					autoHideDuration={1500}
+					onClose={() => setIsDeleteSnackbarOpen(false)}
+					message="Deleted"
+					action={snackDeleteAction}
+				/>
 			</Box>
 		</>
 	);

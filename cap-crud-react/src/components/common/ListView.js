@@ -1,7 +1,7 @@
 import React from "react";
 import { List, ListItemButton, ListItemText, Paper } from "@mui/material";
 
-const ListView = ({ listData, selectedItemId, handleOnClick }) => {
+const ListView = ({ listData, selectedItemId, handleOnClick, handleOnNew }) => {
 	return (
 		<Paper>
 			<List>
@@ -21,6 +21,12 @@ const ListView = ({ listData, selectedItemId, handleOnClick }) => {
 				) : (
 					<></>
 				)}
+				<ListItemButton
+					sx={{ borderBottom: "1px solid #eee" }}
+					onClick={handleOnNew}
+				>
+					<ListItemText primary={"Add New"} />
+				</ListItemButton>
 			</List>
 		</Paper>
 	);

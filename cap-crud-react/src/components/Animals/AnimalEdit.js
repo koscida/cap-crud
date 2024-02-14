@@ -17,7 +17,9 @@ import { styles } from "../../css-common";
 import AnimalList from "./AnimalList";
 
 const AnimalEdit = ({ animal, refreshList }) => {
-	console.log("--AnimalEdit-- animal: ", animal);
+	let { zooId } = useParams();
+
+	// console.log("--AnimalEdit-- animal: ", animal);
 	const [animalEdits, setAnimalEdits] = useState({ ...animal });
 	const [isSnackbarSaveOpen, setIsSnackbarSaveOpen] = useState(false);
 	let navigate = useNavigate();
@@ -66,7 +68,7 @@ const AnimalEdit = ({ animal, refreshList }) => {
 		</>
 	);
 
-	console.log("--AnimalEdit-- animalEdits: ", animalEdits);
+	// console.log("--AnimalEdit-- animalEdits: ", animalEdits);
 	return (
 		<>
 			<Box>

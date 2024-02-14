@@ -14,19 +14,31 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 import { styles } from "../../css-common";
+import zooDataService from "../../services/ZooDataService";
+
+const initName = "";
 
 const AnimalNew = () => {
-	const initName = "";
+	let { zooId } = useParams();
+
 	const [name, setName] = useState(initName);
 	const [isSnackbarSaveOpen, setIsSnackbarSaveOpen] = useState(false);
+	const [zoo, setZoo] = useState({});
 	const [animals, setAnimals] = useState([]);
 
 	useEffect(() => {
 		animalDataService
-			.getAll()
+			.getAll(zooId)
 			.then((res) => {
-				console.log(res);
+				// console.log(res);
 				setAnimals(res.data.data);
+			})
+			.catch((e) => console.log(e));
+		zooDataService
+			.get(zooId)
+			.then((res) => {
+				// console.log(res);
+				setZoo(res.data.data);
 			})
 			.catch((e) => console.log(e));
 	}, []);
@@ -105,6 +117,19 @@ const AnimalNew = () => {
 						<p>
 							Only 10 animals can be added a day, once 10 animals
 							are added, the next day will happen
+						</p>
+					</Box>
+					<Box>
+						<p>
+							<strong>
+								Animals added today (Day {zoo.currentDay}):
+							</strong>
+							&nbsp;
+							{
+								animals.filter(
+									(a) => a.birthDay === zoo.currentDay
+								).length
+							}
 						</p>
 					</Box>
 				</Grid>

@@ -34,21 +34,21 @@ public class ZooController {
 	}
 
 	// get 1
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getZoo(@RequestParam Long id) {
+	@GetMapping("/{zooId}")
+	public ResponseEntity<?> getZoo(@PathVariable Long zooId) {
 		// begin
 		Map<String, Object> map = new LinkedHashMap<>();
 		// try find
 		try {
 			// found
-			Zoo zoo = this.webService.getZooById(id);
+			Zoo zoo = this.webService.getZooById(zooId);
 			map.put("status",HttpStatus.OK);
 			map.put("data",zoo);
 			return new ResponseEntity<>(map, HttpStatus.OK);
 		} catch (Exception e) {
 			map.clear();
 			map.put("status",HttpStatus.NOT_FOUND);
-			map.put("message","No zoo found with id: " + id);
+			map.put("message","No zoo found with id: " + zooId);
 			return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 		}
 	}
@@ -76,12 +76,15 @@ public class ZooController {
 	}
 
 	// update
-	@PutMapping("/{id}")
-	public ResponseEntity<?> updateZoo(@RequestParam Long id, @RequestBody Zoo zoo) throws ResourceNotFoundException {
+	@PutMapping("/{zooId}")
+	public ResponseEntity<?> updateZoo(@PathVariable Long zooId, @RequestBody Zoo zoo) throws ResourceNotFoundException {
+		// test if zooId exists
+		ResponseEntity<?> zooRes = this.getZoo(zooId);
+		if(zooRes.getStatusCode() == HttpStatus.NOT_FOUND) return zooRes;
 		// begin
 		Map<String, Object> map = new LinkedHashMap<>();
 		// update
-		Zoo updatedZoo = this.webService.modifyZoo(id, zoo);
+		Zoo updatedZoo = this.webService.modifyZoo(zooId, zoo);
 		map.put("status", HttpStatus.OK);
 		map.put("data",updatedZoo);
 		// return
@@ -89,12 +92,15 @@ public class ZooController {
 	}
 
 	// delete 1
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteZoo(@RequestParam Long id) {
+	@DeleteMapping("/{zooId}")
+	public ResponseEntity<?> deleteZoo(@PathVariable Long zooId) {
+		// test if zooId exists
+		ResponseEntity<?> zooRes = this.getZoo(zooId);
+		if(zooRes.getStatusCode() == HttpStatus.NOT_FOUND) return zooRes;
 		// begin
 		Map<String, Object> map = new LinkedHashMap<>();
 		// delete
-		this.webService.deleteZooById(id);
+		this.webService.deleteZooById(zooId);
 		map.put("status", HttpStatus.OK);
 		// return
 		return new ResponseEntity<>(map, HttpStatus.OK);

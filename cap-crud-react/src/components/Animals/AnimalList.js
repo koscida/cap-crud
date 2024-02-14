@@ -17,10 +17,8 @@ import ListView from "../common/ListView";
 
 // helpers
 
-const findSelectedAnimal = (animals, selectedId) => {
-	return animals && selectedId
-		? animals.find((a) => a.id === selectedId)
-		: null;
+const findSelected = (list, selectedId) => {
+	return list && selectedId ? list.find((a) => a.id === selectedId) : null;
 };
 
 const AnimalList = ({ isEditing = false }) => {
@@ -68,7 +66,10 @@ const AnimalList = ({ isEditing = false }) => {
 						listData={animals}
 						selectedItemId={selectedAnimalId}
 						handleOnClick={(clickedId) =>
-							navigate(`/animals/${clickedId}`)
+							navigate(`/zoos/${zooId}/animals/${clickedId}`)
+						}
+						handleOnNew={() =>
+							navigate(`/zoos/${zooId}/animals/new`)
 						}
 					/>
 				</Grid>
@@ -77,18 +78,13 @@ const AnimalList = ({ isEditing = false }) => {
 					<Box>
 						{isEditing && animals ? (
 							<AnimalEdit
-								animal={findSelectedAnimal(
-									animals,
-									selectedAnimalId
-								)}
+								animal={findSelected(animals, selectedAnimalId)}
 								refreshList={pullList}
 							/>
 						) : (
 							<AnimalView
-								animal={findSelectedAnimal(
-									animals,
-									selectedAnimalId
-								)}
+								animal={findSelected(animals, selectedAnimalId)}
+								refreshList={pullList}
 							/>
 						)}
 					</Box>

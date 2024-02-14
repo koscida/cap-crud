@@ -48,8 +48,8 @@ public class AnimalController {
 	}
 
 	// Read 1
-	@GetMapping("/{id}")
-	public ResponseEntity<?> getAnimal(@PathVariable(name="zooId") long zooId, @PathVariable(name="id") long id ) {
+	@GetMapping("/{animalId}")
+	public ResponseEntity<?> getAnimal(@PathVariable(name="zooId") long zooId, @PathVariable(name="animalId") long animalId ) {
 		// get zoo
 		Map<String, Object> zooMap = getZoo(zooId);
 		if(zooMap.get("status") == HttpStatus.NOT_FOUND)
@@ -60,7 +60,7 @@ public class AnimalController {
 			// try find animal
 			try {
 				// found
-				Animal animal = this.webService.getAnimalById(id, zooId);
+				Animal animal = this.webService.getAnimalById(animalId, zooId);
 				map.put("status", HttpStatus.OK);
 				map.put("data", animal);
 				// return
@@ -69,7 +69,7 @@ public class AnimalController {
 // did not find
 				map.clear();
 				map.put("status", HttpStatus.NOT_FOUND);
-				map.put("message", "No animal found with Id: " + id);
+				map.put("message", "No animal found with id: " + animalId);
 				return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 			}
 		}
@@ -102,8 +102,8 @@ public class AnimalController {
 	}
 
 	// Update 1
-	@PutMapping("/{id}")
-	public ResponseEntity<?> updateAnimal(@PathVariable(name="zooId") long zooId, @PathVariable long id, @RequestBody Animal animal) throws ResourceNotFoundException {
+	@PutMapping("/{animalId}")
+	public ResponseEntity<?> updateAnimal(@PathVariable(name="zooId") long zooId, @PathVariable(name="animalId") long animalId, @RequestBody Animal animal) throws ResourceNotFoundException {
 		// get zoo
 		Map<String, Object> zooMap = getZoo(zooId);
 		if(zooMap.get("status") == HttpStatus.NOT_FOUND)
@@ -112,7 +112,7 @@ public class AnimalController {
 			// create
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
 			// save
-			Animal updatedAnimal = this.webService.modifyAnimal(id, animal, zooId);
+			Animal updatedAnimal = this.webService.modifyAnimal(animalId, animal, zooId);
 			map.put("status", HttpStatus.OK);
 			map.put("data",updatedAnimal);
 			// return
@@ -121,8 +121,8 @@ public class AnimalController {
 	}
 
 	// Delete 1
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> deleteAnimal(@PathVariable(name="zooId") long zooId, @PathVariable long id) {
+	@DeleteMapping("/{animalId}")
+	public ResponseEntity<?> deleteAnimal(@PathVariable(name="zooId") long zooId, @PathVariable( name ="animalId") long animalId) {
 		// get zoo
 		Map<String, Object> zooMap = getZoo(zooId);
 		if(zooMap.get("status") == HttpStatus.NOT_FOUND)
@@ -133,14 +133,14 @@ public class AnimalController {
 			// try delete
 			try {
 				// deleted
-				this.webService.deleteAnimalById(id, zooId);
+				this.webService.deleteAnimalById(animalId, zooId);
 				map.put("status", HttpStatus.OK);
 				// return
 				return new ResponseEntity<>(map, HttpStatus.OK);
 			} catch (Exception e) {
 				map.clear();
 				map.put("status",HttpStatus.NOT_FOUND);
-				map.put("message", "No animal found with Id: " + id);
+				map.put("message", "No animal found with id: " + animalId);
 				return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 			}
 

@@ -15,20 +15,32 @@ import PetsIcon from "@mui/icons-material/Pets";
 
 import { styles } from "../css-common";
 
-import { withStyles } from "@mui/material";
+import { Chip, withStyles } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const pageName = "ANIMALS";
 const NameIcon = PetsIcon;
-const pages = [
-	["Zoo List", "/zoos"],
-	["New Zoo", "/zoos/new"],
-];
-const settings = ["Profile", "Account", "Logout"];
+const userSettings = ["Profile", "Account", "Logout"];
 
 export function MUIResponsiveAppBar() {
 	const [anchorElNav, setAnchorElNav] = React.useState(null);
 	const [anchorElUser, setAnchorElUser] = React.useState(null);
+	const [anchorElZoo, setAnchorElZoo] = React.useState(null);
+
+	const [zooSettings, setZooSettings] = React.useState([
+		"Zoo 1",
+		"Zoo 2",
+		"Zoo 3",
+	]);
+	const zooId = 0;
+	const pages = [
+		["Animal List", `/zoos/${zooId}/animals`],
+		["New Animal", `/zoos/${zooId}/animals/new`],
+		["Zoo List", "/zoos"],
+		["New Zoo", "/zoos/new"],
+	];
+
+	// handlers
 
 	const handleOpenNavMenu = (event) => {
 		setAnchorElNav(event.currentTarget);
@@ -36,19 +48,25 @@ export function MUIResponsiveAppBar() {
 	const handleOpenUserMenu = (event) => {
 		setAnchorElUser(event.currentTarget);
 	};
+	const handleOpenZooMenu = (e) => {
+		setAnchorElZoo(e.currentTarget);
+	};
 
 	const handleCloseNavMenu = () => {
 		setAnchorElNav(null);
 	};
-
 	const handleCloseUserMenu = () => {
 		setAnchorElUser(null);
+	};
+	const handleCloseZooMenu = () => {
+		setAnchorElZoo(null);
 	};
 
 	return (
 		<AppBar position="static">
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
+					{/* Display for small screens */}
 					<NameIcon
 						sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
 					/>
@@ -69,7 +87,6 @@ export function MUIResponsiveAppBar() {
 					>
 						{pageName}
 					</Typography>
-
 					<Box
 						sx={{
 							flexGrow: 1,
@@ -120,6 +137,7 @@ export function MUIResponsiveAppBar() {
 						</Menu>
 					</Box>
 
+					{/* Display for Large Screens */}
 					<NameIcon
 						sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
 					/>
@@ -159,6 +177,53 @@ export function MUIResponsiveAppBar() {
 						))}
 					</Box>
 
+					{/* Zoo Menu */}
+					<Box sx={{ flexGrow: 0, mr: 3 }}>
+						<Tooltip title="Open zoo settings">
+							<Box
+								sx={{
+									display: "flex",
+									alignItems: "center",
+								}}
+							>
+								<Typography sx={{ mr: 1 }}>Zoo:</Typography>
+								<Chip
+									label="Zoo 1"
+									color="info"
+									onClick={handleOpenZooMenu}
+								/>
+							</Box>
+						</Tooltip>
+						<Menu
+							sx={{ mt: "45px" }}
+							id="menu-appbar"
+							anchorEl={anchorElZoo}
+							anchorOrigin={{
+								vertical: "top",
+								horizontal: "right",
+							}}
+							keepMounted
+							transformOrigin={{
+								vertical: "top",
+								horizontal: "right",
+							}}
+							open={Boolean(anchorElZoo)}
+							onClose={handleCloseZooMenu}
+						>
+							{zooSettings.map((setting) => (
+								<MenuItem
+									key={setting}
+									onClick={handleCloseZooMenu}
+								>
+									<Typography textAlign="center">
+										{setting}
+									</Typography>
+								</MenuItem>
+							))}
+						</Menu>
+					</Box>
+
+					{/* Account Menu */}
 					<Box sx={{ flexGrow: 0 }}>
 						<Tooltip title="Open settings">
 							<IconButton
@@ -166,7 +231,7 @@ export function MUIResponsiveAppBar() {
 								sx={{ p: 0 }}
 							>
 								<Avatar
-									alt="Remy Sharp"
+									alt="Account Icon"
 									src="/static/images/avatar/2.jpg"
 								/>
 							</IconButton>
@@ -187,7 +252,7 @@ export function MUIResponsiveAppBar() {
 							open={Boolean(anchorElUser)}
 							onClose={handleCloseUserMenu}
 						>
-							{settings.map((setting) => (
+							{userSettings.map((setting) => (
 								<MenuItem
 									key={setting}
 									onClick={handleCloseUserMenu}

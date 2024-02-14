@@ -16,7 +16,7 @@ import ZooView from "./ZooView";
 
 // helpers
 
-const findSelectedZoo = (list, selectedId) => {
+const findSelected = (list, selectedId) => {
 	return list && selectedId ? list.find((a) => a.id === selectedId) : null;
 };
 
@@ -31,9 +31,13 @@ const ZooList = ({ isEditing = false }) => {
 	// on load
 
 	useEffect(() => {
+		// if no zoos, load them
 		if (!zoos || zoos.length === 0) pullList();
+		// on change of zoo id, reset
+		setSelectedZooId(parseInt(zooId));
 		console.log(
-			"--ZooList-- zoos: ",
+			"--ZooList--",
+			" zoos: ",
 			zoos,
 			" selectedZooId: ",
 			selectedZooId
@@ -66,6 +70,7 @@ const ZooList = ({ isEditing = false }) => {
 						handleOnClick={(clickedId) =>
 							navigate(`/zoos/${clickedId}`)
 						}
+						handleOnNew={() => navigate("/zoos/new")}
 					/>
 				</Grid>
 
@@ -73,12 +78,13 @@ const ZooList = ({ isEditing = false }) => {
 					<Box>
 						{isEditing && zoos ? (
 							<ZooEdit
-								zoo={findSelectedZoo(zoos, selectedZooId)}
+								zoo={findSelected(zoos, selectedZooId)}
 								refreshList={pullList}
 							/>
 						) : (
 							<ZooView
-								zoo={findSelectedZoo(zoos, selectedZooId)}
+								zoo={findSelected(zoos, selectedZooId)}
+								refreshList={pullList}
 							/>
 						)}
 					</Box>

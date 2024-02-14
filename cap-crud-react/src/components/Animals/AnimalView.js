@@ -10,35 +10,31 @@ import {
 	DialogContentText,
 	DialogTitle,
 	Grid,
+	IconButton,
 	Paper,
+	Snackbar,
 } from "@mui/material";
-import AnimalList from "./AnimalList";
+import CloseIcon from "@mui/icons-material/Close";
 
-function AnimalView({ animal }) {
+function AnimalView({ animal, refreshList }) {
+	let { zooId } = useParams();
+
 	const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
-	// const [animal, setAnimal] = useState(animal);
-	// let { id } = useParams();
+	const [isDeleteSnackbarOpen, setIsDeleteSnackbarOpen] = useState(false);
 
 	let navigate = useNavigate();
-
-	// useEffect(() => {
-	// 	if(!animal)
-	// 	animalDataService
-	// 		.get(id)
-	// 		.then((res) => {
-	// 			// console.log(`get(${id}): `, res);
-	// 			setAnimal(res.data);
-	// 		})
-	// 		.catch((e) => console.log(e));
-	// }, []);
 
 	const handleDelete = () => {
 		// make delete call
 		animalDataService
 			.delete(animal.id)
 			.then((res) => {
-				console.log(res);
-				// go back to the animal list
+				// console.log(res);
+				// pop up save
+				setIsDeleteSnackbarOpen(true);
+				// refresh list
+				refreshList();
+				// go back to the list
 				navigate("/animals");
 			})
 			.catch((e) => console.log(e));
@@ -71,6 +67,19 @@ function AnimalView({ animal }) {
 				</Button>
 			</DialogActions>
 		</Dialog>
+	);
+
+	const snackDeleteAction = (
+		<>
+			<IconButton
+				size="small"
+				aria-label="close"
+				color="inherit"
+				onClick={() => setIsDeleteSnackbarOpen(false)}
+			>
+				<CloseIcon fontSize="small" />
+			</IconButton>
+		</>
 	);
 
 	return (
@@ -119,6 +128,14 @@ function AnimalView({ animal }) {
 				) : (
 					<></>
 				)}
+
+				<Snackbar
+					open={isDeleteSnackbarOpen}
+					autoHideDuration={1500}
+					onClose={() => setIsDeleteSnackbarOpen(false)}
+					message="Deleted"
+					action={snackDeleteAction}
+				/>
 			</Box>
 		</>
 	);
