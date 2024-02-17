@@ -20,10 +20,8 @@ const findSelected = (list, selectedId) => {
 	return list && selectedId ? list.find((a) => a.id === selectedId) : null;
 };
 
-const ZooList = ({ isEditing = false }) => {
+const ZooList = ({ zoos, pullList, isEditing = false }) => {
 	let { zooId } = useParams();
-
-	const [zoos, setZoos] = useState([]);
 	const [selectedZooId, setSelectedZooId] = useState(parseInt(zooId));
 
 	let navigate = useNavigate();
@@ -31,31 +29,10 @@ const ZooList = ({ isEditing = false }) => {
 	// on load
 
 	useEffect(() => {
-		// if no zoos, load them
-		if (!zoos || zoos.length === 0) pullList();
 		// on change of zoo id, reset
 		setSelectedZooId(parseInt(zooId));
-		console.log(
-			"--ZooList--",
-			" zoos: ",
-			zoos,
-			" selectedZooId: ",
-			selectedZooId
-		);
+		console.log("--ZooList--", " selectedZooId: ", selectedZooId);
 	}, [zooId]);
-
-	// get list
-	const pullList = () => {
-		// send
-		zooDataService
-			.getAll()
-			.then((res) => {
-				console.log(res);
-				// set the list
-				setZoos(res.data.data);
-			})
-			.catch((e) => console.log(e));
-	};
 
 	return (
 		<>

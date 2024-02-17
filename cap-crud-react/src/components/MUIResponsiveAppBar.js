@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -17,51 +17,67 @@ import { styles } from "../css-common";
 
 import { Chip, withStyles } from "@mui/material";
 import { Link } from "react-router-dom";
+import { SystemSecurityUpdate } from "@mui/icons-material";
 
 const pageName = "ANIMALS";
 const NameIcon = PetsIcon;
 const userSettings = ["Profile", "Account", "Logout"];
 
-export function MUIResponsiveAppBar() {
-	const [anchorElNav, setAnchorElNav] = React.useState(null);
-	const [anchorElUser, setAnchorElUser] = React.useState(null);
-	const [anchorElZoo, setAnchorElZoo] = React.useState(null);
+export function MUIResponsiveAppBar({ zoos, selectedZooId, setSelectedZooId }) {
+	const [anchorElNav, setAnchorElNav] = useState(null);
+	const [anchorElUser, setAnchorElUser] = useState(null);
+	const [anchorElZoo, setAnchorElZoo] = useState(null);
 
-	const [zooSettings, setZooSettings] = React.useState([
-		"Zoo 1",
-		"Zoo 2",
-		"Zoo 3",
-	]);
-	const zooId = 0;
+	useEffect(() => {}, [zoos]);
+
 	const pages = [
-		["Animal List", `/zoos/${zooId}/animals`],
-		["New Animal", `/zoos/${zooId}/animals/new`],
 		["Zoo List", "/zoos"],
 		["New Zoo", "/zoos/new"],
 	];
+	if (selectedZooId) {
+		pages.push(["Animal List", `/zoos/${selectedZooId}/animals`]);
+		pages.push(["New Animal", `/zoos/${selectedZooId}/animals/new`]);
+	}
 
 	// handlers
 
 	const handleOpenNavMenu = (event) => {
 		setAnchorElNav(event.currentTarget);
 	};
-	const handleOpenUserMenu = (event) => {
-		setAnchorElUser(event.currentTarget);
-	};
-	const handleOpenZooMenu = (e) => {
-		setAnchorElZoo(e.currentTarget);
-	};
-
 	const handleCloseNavMenu = () => {
 		setAnchorElNav(null);
 	};
-	const handleCloseUserMenu = () => {
-		setAnchorElUser(null);
+
+	const handleOpenZooMenu = (e) => {
+		setAnchorElZoo(e.currentTarget);
 	};
 	const handleCloseZooMenu = () => {
 		setAnchorElZoo(null);
 	};
+	const handleZooMenuClick = (newZooId) => {
+		console.log(
+			"--MUIResponsiveAppBar-handleZooMenuClick--",
+			", newZooId: ",
+			newZooId
+		);
+		setSelectedZooId(zoos.find((z) => z.id === newZooId));
+		handleCloseZooMenu();
+	};
 
+	const handleOpenUserMenu = (event) => {
+		setAnchorElUser(event.currentTarget);
+	};
+	const handleCloseUserMenu = () => {
+		setAnchorElUser(null);
+	};
+
+	console.log(
+		"--MUIResponsiveAppBar--",
+		", zoos: ",
+		zoos,
+		", selectedZooId: ",
+		selectedZooId
+	);
 	return (
 		<AppBar position="static">
 			<Container maxWidth="xl">
@@ -170,7 +186,11 @@ export function MUIResponsiveAppBar() {
 								key={page}
 								onClick={handleCloseNavMenu}
 								href={link}
-								sx={{ my: 2, color: "white", display: "block" }}
+								sx={{
+									my: 2,
+									color: "white",
+									display: "block",
+								}}
 							>
 								{page}
 							</Button>
@@ -178,50 +198,60 @@ export function MUIResponsiveAppBar() {
 					</Box>
 
 					{/* Zoo Menu */}
-					<Box sx={{ flexGrow: 0, mr: 3 }}>
-						<Tooltip title="Open zoo settings">
-							<Box
-								sx={{
-									display: "flex",
-									alignItems: "center",
-								}}
-							>
-								<Typography sx={{ mr: 1 }}>Zoo:</Typography>
-								<Chip
-									label="Zoo 1"
-									color="info"
-									onClick={handleOpenZooMenu}
-								/>
-							</Box>
-						</Tooltip>
-						<Menu
-							sx={{ mt: "45px" }}
-							id="menu-appbar"
-							anchorEl={anchorElZoo}
-							anchorOrigin={{
-								vertical: "top",
-								horizontal: "right",
-							}}
-							keepMounted
-							transformOrigin={{
-								vertical: "top",
-								horizontal: "right",
-							}}
-							open={Boolean(anchorElZoo)}
-							onClose={handleCloseZooMenu}
-						>
-							{zooSettings.map((setting) => (
-								<MenuItem
-									key={setting}
-									onClick={handleCloseZooMenu}
+					{zoos && selectedZooId ? (
+						<Box sx={{ flexGrow: 0, mr: 3 }}>
+							<Tooltip title="Open zoo settings">
+								<Box
+									sx={{
+										display: "flex",
+										alignItems: "center",
+									}}
 								>
-									<Typography textAlign="center">
-										{setting}
-									</Typography>
-								</MenuItem>
-							))}
-						</Menu>
-					</Box>
+									<Typography sx={{ mr: 1 }}>Zoo:</Typography>
+									<Chip
+										label={
+											zoos.find(
+												(z) => z.id === selectedZooId
+											).name
+										}
+										color="info"
+										onClick={handleOpenZooMenu}
+									/>
+								</Box>
+							</Tooltip>
+							<Menu
+								sx={{ mt: "45px" }}
+								id="menu-appbar"
+								anchorEl={anchorElZoo}
+								anchorOrigin={{
+									vertical: "top",
+									horizontal: "right",
+								}}
+								keepMounted
+								transformOrigin={{
+									vertical: "top",
+									horizontal: "right",
+								}}
+								open={Boolean(anchorElZoo)}
+								onClose={handleCloseZooMenu}
+							>
+								{zoos.map((zoo) => (
+									<MenuItem
+										key={zoo.name}
+										onClick={() =>
+											handleZooMenuClick(zoo.id)
+										}
+									>
+										<Typography textAlign="center">
+											{zoo.name}
+										</Typography>
+									</MenuItem>
+								))}
+							</Menu>
+						</Box>
+					) : (
+						<></>
+					)}
 
 					{/* Account Menu */}
 					<Box sx={{ flexGrow: 0 }}>

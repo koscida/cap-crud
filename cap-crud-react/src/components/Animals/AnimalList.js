@@ -24,7 +24,7 @@ const findSelected = (list, selectedId) => {
 const AnimalList = ({ isEditing = false }) => {
 	let { zooId, animalId } = useParams();
 
-	const [animals, setAnimals] = useState([]);
+	const [animals, setAnimals] = useState(null);
 	const [selectedAnimalId, setSelectedId] = useState(parseInt(animalId));
 	const [selectedZooId, setZooId] = useState(parseInt(zooId));
 
@@ -33,14 +33,14 @@ const AnimalList = ({ isEditing = false }) => {
 	// on load
 
 	useEffect(() => {
-		if (!animals || animals.length === 0) pullList();
+		if (!animals) pullList();
 		console.log(
 			"--AnimalList-- animals: ",
 			animals,
 			" selectedId: ",
 			selectedAnimalId
 		);
-	}, [animalId, animals]);
+	}, [animals]);
 
 	// get list
 	const pullList = () => {
