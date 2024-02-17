@@ -15,18 +15,26 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import { styles } from "../../css-common";
 import zooDataService from "../../services/ZooDataService";
+import { useZooContext } from "../../app/ZooContext";
 
 const initName = "";
 
 const AnimalNew = () => {
+	const {
+		zooData: { zoos, contextZoo },
+		refreshZoos,
+	} = useZooContext();
 	let { zooId } = useParams();
 
 	const [name, setName] = useState(initName);
 	const [isSnackbarSaveOpen, setIsSnackbarSaveOpen] = useState(false);
-	const [zoo, setZoo] = useState({});
 	const [animals, setAnimals] = useState([]);
 
 	useEffect(() => {
+		pullAnimals();
+	}, []);
+
+	const pullAnimals = () => {
 		animalDataService
 			.getAll(zooId)
 			.then((res) => {
@@ -34,31 +42,28 @@ const AnimalNew = () => {
 				setAnimals(res.data.data);
 			})
 			.catch((e) => console.log(e));
-		zooDataService
-			.get(zooId)
-			.then((res) => {
-				// console.log(res);
-				setZoo(res.data.data);
-			})
-			.catch((e) => console.log(e));
-	}, []);
+	};
 
 	const createAnimal = () => {
 		// create data to send
 		const data = {
 			name,
+			zooId,
+			birthDay: contextZoo.currentDay,
 		};
 		console.log(data);
 
 		// send
 		animalDataService
-			.create(data)
+			.create(zooId, data)
 			.then((res) => {
 				console.log(res);
 				// clear the form
 				setName(initName);
 				// save
 				setIsSnackbarSaveOpen(true);
+				// refresh
+				pullAnimals();
 			})
 			.catch((e) => console.log(e));
 	};
@@ -114,23 +119,27 @@ const AnimalNew = () => {
 				<Grid item={true} xs={6}>
 					<Box>
 						<h3>Zoo Rules!</h3>
-						<p>
-							Only 10 animals can be added a day, once 10 animals
-							are added, the next day will happen
-						</p>
+						<p>A limit of 10 animals can be added per day</p>
 					</Box>
 					<Box>
-						<p>
-							<strong>
-								Animals added today (Day {zoo.currentDay}):
-							</strong>
-							&nbsp;
-							{
-								animals.filter(
-									(a) => a.birthDay === zoo.currentDay
-								).length
-							}
-						</p>
+						{contextZoo ? (
+							<p>
+								<strong>
+									Animals added today (Day{" "}
+									{contextZoo.currentDay}
+									):
+								</strong>
+								&nbsp;
+								{
+									animals.filter(
+										(a) =>
+											a.birthDay === contextZoo.currentDay
+									).length
+								}
+							</p>
+						) : (
+							<></>
+						)}
 					</Box>
 				</Grid>
 			</Grid>

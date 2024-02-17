@@ -143,7 +143,7 @@ public class WebService {
 	public Zoo createNewZoo(Zoo zoo) throws MaximumResourceLimit {
 		// check max number of zoos
 		List<Zoo> zoos = this.zooRepository.findAll();
-		if(zoos.size() >= 5)
+		if(zoos.size() >= 6)
 			throw new MaximumResourceLimit("Maximum number of zoos created");
 
 		// set defaults

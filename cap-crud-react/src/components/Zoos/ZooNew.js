@@ -13,27 +13,18 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
+import { useZooContext } from "../../app/ZooContext";
 import { styles } from "../../css-common";
 
 const ZooNew = () => {
+	const {
+		zooData: { zoos },
+		refreshZoos,
+	} = useZooContext();
+
 	const initName = "";
 	const [name, setName] = useState(initName);
 	const [isSnackbarSaveOpen, setIsSnackbarSaveOpen] = useState(false);
-	const [zoos, setZoos] = useState([]);
-
-	useEffect(() => {
-		pullData();
-	}, []);
-
-	const pullData = () => {
-		zooDataService
-			.getAll()
-			.then((res) => {
-				console.log(res);
-				setZoos(res.data.data);
-			})
-			.catch((e) => console.log(e));
-	};
 
 	const createZoo = () => {
 		// create data to send
@@ -52,7 +43,7 @@ const ZooNew = () => {
 				// save
 				setIsSnackbarSaveOpen(true);
 				// re-pull
-				pullData();
+				refreshZoos();
 			})
 			.catch((e) => console.log(e));
 	};
@@ -114,7 +105,7 @@ const ZooNew = () => {
 					</Box>
 					<Box>
 						<h3>Zoo Rules!</h3>
-						<p>Only 5 zoos per user!</p>
+						<p>Only 6 zoos per user!</p>
 					</Box>
 				</Grid>
 			</Grid>

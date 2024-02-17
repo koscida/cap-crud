@@ -25,8 +25,10 @@ const AnimalList = ({ isEditing = false }) => {
 	let { zooId, animalId } = useParams();
 
 	const [animals, setAnimals] = useState(null);
-	const [selectedAnimalId, setSelectedId] = useState(parseInt(animalId));
-	const [selectedZooId, setZooId] = useState(parseInt(zooId));
+	const [selectedAnimalId, setSelectedAnimalId] = useState(
+		parseInt(animalId)
+	);
+	const [selectedZooId, setSelectedZooId] = useState(parseInt(zooId));
 
 	let navigate = useNavigate();
 
@@ -34,12 +36,12 @@ const AnimalList = ({ isEditing = false }) => {
 
 	useEffect(() => {
 		if (!animals) pullList();
-		console.log(
-			"--AnimalList-- animals: ",
-			animals,
-			" selectedId: ",
-			selectedAnimalId
-		);
+		// console.log(
+		// 	"--AnimalList-- animals: ",
+		// 	animals,
+		// 	" selectedId: ",
+		// 	selectedAnimalId
+		// );
 	}, [animals]);
 
 	// get list
@@ -48,7 +50,7 @@ const AnimalList = ({ isEditing = false }) => {
 		animalDataService
 			.getAll(selectedZooId)
 			.then((res) => {
-				console.log(res);
+				// console.log(res);
 				// set the animal list
 				setAnimals(res.data.data);
 			})
@@ -56,12 +58,12 @@ const AnimalList = ({ isEditing = false }) => {
 	};
 
 	return (
-		<>
+		<Box>
 			<Box>
 				<h1>Animal List</h1>
 			</Box>
 			<Grid container spacing={2}>
-				<Grid item={true} xs={4}>
+				<Grid item="true" xs={4}>
 					<ListView
 						listData={animals}
 						selectedItemId={selectedAnimalId}
@@ -74,23 +76,21 @@ const AnimalList = ({ isEditing = false }) => {
 					/>
 				</Grid>
 
-				<Grid item={true} xs={8}>
+				<Grid item="true" xs={8}>
 					<Box>
-						{isEditing && animals ? (
+						{isEditing ? (
 							<AnimalEdit
 								animal={findSelected(animals, selectedAnimalId)}
-								refreshList={pullList}
 							/>
 						) : (
 							<AnimalView
 								animal={findSelected(animals, selectedAnimalId)}
-								refreshList={pullList}
 							/>
 						)}
 					</Box>
 				</Grid>
 			</Grid>
-		</>
+		</Box>
 	);
 };
 

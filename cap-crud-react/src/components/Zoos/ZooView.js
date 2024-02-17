@@ -15,8 +15,10 @@ import {
 	Snackbar,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { useZooContext } from "../../app/ZooContext";
 
-function ZooView({ zoo, refreshList }) {
+function ZooView({ zoo }) {
+	const { zooData, refreshZoos } = useZooContext();
 	const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
 	const [isDeleteSnackbarOpen, setIsDeleteSnackbarOpen] = useState(false);
 
@@ -31,7 +33,7 @@ function ZooView({ zoo, refreshList }) {
 				// pop-up save
 				setIsDeleteSnackbarOpen(true);
 				// refresh list
-				refreshList();
+				refreshZoos();
 				// go back to the list
 				navigate("/zoos");
 			})

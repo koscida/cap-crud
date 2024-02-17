@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -12,32 +12,40 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import PetsIcon from "@mui/icons-material/Pets";
-
 import { styles } from "../css-common";
-
 import { Chip, withStyles } from "@mui/material";
-import { Link } from "react-router-dom";
-import { SystemSecurityUpdate } from "@mui/icons-material";
+import { useZooContext } from "../app/ZooContext";
 
 const pageName = "ANIMALS";
 const NameIcon = PetsIcon;
 const userSettings = ["Profile", "Account", "Logout"];
-
-export function MUIResponsiveAppBar({ zoos, selectedZooId, setSelectedZooId }) {
-	const [anchorElNav, setAnchorElNav] = useState(null);
-	const [anchorElUser, setAnchorElUser] = useState(null);
-	const [anchorElZoo, setAnchorElZoo] = useState(null);
-
-	useEffect(() => {}, [zoos]);
-
+const getPages = (zooId) => {
 	const pages = [
 		["Zoo List", "/zoos"],
 		["New Zoo", "/zoos/new"],
 	];
-	if (selectedZooId) {
-		pages.push(["Animal List", `/zoos/${selectedZooId}/animals`]);
-		pages.push(["New Animal", `/zoos/${selectedZooId}/animals/new`]);
+	if (zooId) {
+		pages.push(["Animal List", `/zoos/${zooId}/animals`]);
+		pages.push(["New Animal", `/zoos/${zooId}/animals/new`]);
 	}
+	return pages;
+};
+
+export function MUIResponsiveAppBar() {
+	const {
+		zooData: { zoos, contextZooId, contextZoo },
+		setContextZooId,
+	} = useZooContext();
+
+	const [anchorElNav, setAnchorElNav] = useState(null);
+	const [anchorElUser, setAnchorElUser] = useState(null);
+	const [anchorElZoo, setAnchorElZoo] = useState(null);
+
+	const [pages, setPages] = useState(getPages(contextZooId));
+
+	useEffect(() => {
+		setPages(getPages(contextZooId));
+	}, [contextZooId]);
 
 	// handlers
 
@@ -60,7 +68,7 @@ export function MUIResponsiveAppBar({ zoos, selectedZooId, setSelectedZooId }) {
 			", newZooId: ",
 			newZooId
 		);
-		setSelectedZooId(zoos.find((z) => z.id === newZooId));
+		setContextZooId(newZooId);
 		handleCloseZooMenu();
 	};
 
@@ -71,13 +79,15 @@ export function MUIResponsiveAppBar({ zoos, selectedZooId, setSelectedZooId }) {
 		setAnchorElUser(null);
 	};
 
-	console.log(
-		"--MUIResponsiveAppBar--",
-		", zoos: ",
-		zoos,
-		", selectedZooId: ",
-		selectedZooId
-	);
+	// console.log(
+	// 	"--MUIResponsiveAppBar--",
+	// 	", zoos: ",
+	// 	zoos,
+	// 	", contextZooId: ",
+	// 	contextZooId,
+	// 	", pages: ",
+	// 	pages
+	// );
 	return (
 		<AppBar position="static">
 			<Container maxWidth="xl">
@@ -198,7 +208,7 @@ export function MUIResponsiveAppBar({ zoos, selectedZooId, setSelectedZooId }) {
 					</Box>
 
 					{/* Zoo Menu */}
-					{zoos && selectedZooId ? (
+					{zoos && zoos.length > 0 && contextZoo ? (
 						<Box sx={{ flexGrow: 0, mr: 3 }}>
 							<Tooltip title="Open zoo settings">
 								<Box
@@ -209,14 +219,14 @@ export function MUIResponsiveAppBar({ zoos, selectedZooId, setSelectedZooId }) {
 								>
 									<Typography sx={{ mr: 1 }}>Zoo:</Typography>
 									<Chip
-										label={
-											zoos.find(
-												(z) => z.id === selectedZooId
-											).name
-										}
+										sx={{ mr: 1 }}
+										label={contextZoo.name}
 										color="info"
 										onClick={handleOpenZooMenu}
 									/>
+									<Typography sx={{ mr: 1 }}>
+										Day: {contextZoo.currentDay}
+									</Typography>
 								</Box>
 							</Tooltip>
 							<Menu

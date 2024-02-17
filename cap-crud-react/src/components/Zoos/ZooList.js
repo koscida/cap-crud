@@ -14,28 +14,39 @@ import ListView from "../common/ListView";
 import ZooEdit from "./ZooEdit";
 import ZooView from "./ZooView";
 
+import { useZooContext } from "../../app/ZooContext";
+
 // helpers
 
 const findSelected = (list, selectedId) => {
 	return list && selectedId ? list.find((a) => a.id === selectedId) : null;
 };
 
-const ZooList = ({ zoos, pullList, isEditing = false }) => {
+const ZooList = ({ isEditing = false }) => {
+	const {
+		zooData: { zoos },
+	} = useZooContext();
 	let { zooId } = useParams();
+
 	const [selectedZooId, setSelectedZooId] = useState(parseInt(zooId));
 
 	let navigate = useNavigate();
 
-	// on load
+	// check?
+
+	let selectedZoo = null;
+	if (zooId) selectedZoo = findSelected(zoos, selectedZooId);
+
+	// on load, and on url change
 
 	useEffect(() => {
 		// on change of zoo id, reset
 		setSelectedZooId(parseInt(zooId));
-		console.log("--ZooList--", " selectedZooId: ", selectedZooId);
+		// console.log("--ZooList--", " selectedZooId: ", selectedZooId);
 	}, [zooId]);
 
 	return (
-		<>
+		<Box>
 			<Box>
 				<h1>Zoo List</h1>
 			</Box>
@@ -51,23 +62,21 @@ const ZooList = ({ zoos, pullList, isEditing = false }) => {
 					/>
 				</Grid>
 
-				<Grid item={true} xs={8}>
-					<Box>
-						{isEditing && zoos ? (
-							<ZooEdit
-								zoo={findSelected(zoos, selectedZooId)}
-								refreshList={pullList}
-							/>
-						) : (
-							<ZooView
-								zoo={findSelected(zoos, selectedZooId)}
-								refreshList={pullList}
-							/>
-						)}
-					</Box>
-				</Grid>
+				{selectedZoo ? (
+					<Grid item={true} xs={8}>
+						<Box>
+							{isEditing ? (
+								<ZooEdit zoo={selectedZoo} />
+							) : (
+								<ZooView zoo={selectedZoo} />
+							)}
+						</Box>
+					</Grid>
+				) : (
+					<></>
+				)}
 			</Grid>
-		</>
+		</Box>
 	);
 };
 

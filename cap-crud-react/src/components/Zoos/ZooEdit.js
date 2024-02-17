@@ -12,9 +12,10 @@ import {
 	Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { useZooContext } from "../../app/ZooContext";
 
-const ZooEdit = ({ zoo, refreshList }) => {
-	console.log("--ZooEdit-- zoo: ", zoo);
+const ZooEdit = ({ zoo }) => {
+	const { refreshZoos } = useZooContext();
 	const [zooEdits, setZooEdits] = useState({ ...zoo });
 	const [isSnackbarSaveOpen, setIsSnackbarSaveOpen] = useState(false);
 	let navigate = useNavigate();
@@ -43,7 +44,7 @@ const ZooEdit = ({ zoo, refreshList }) => {
 				// save
 				setIsSnackbarSaveOpen(true);
 				// refresh
-				refreshList();
+				refreshZoos();
 				// reload
 				navigate(`/zoos/${zoo.id}`);
 			})
