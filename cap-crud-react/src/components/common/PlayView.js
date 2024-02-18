@@ -90,7 +90,14 @@ const PlayView = () => {
 						{animals ? (
 							animals.map((animal) => (
 								<Grid item xs={2} key={animal.id}>
-									<Paper sx={{ padding: "0.25rem" }}>
+									<Paper
+										sx={{
+											padding: "0.25rem",
+											border: animal.dead
+												? "1px solid red"
+												: "",
+										}}
+									>
 										<Box sx={{}}>{animal.name}</Box>
 										<ItemRow>
 											<Tooltip title="Energy">

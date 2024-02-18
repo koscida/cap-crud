@@ -7,15 +7,8 @@ import { Box } from "@mui/material";
 
 const Home = () => {
 	return (
-		<Box>
+		<Box sx={{ mb: 3 }}>
 			<PlayView />
-			<hr />
-			<h1>Animals Home</h1>
-			<p>Features:</p>
-			<ul>
-				<li>Add, edit, delete zoos</li>
-				<li>Add, edit, delete animals</li>
-			</ul>
 		</Box>
 	);
 };

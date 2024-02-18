@@ -14,6 +14,7 @@ import MenuItem from "@mui/material/MenuItem";
 import PetsIcon from "@mui/icons-material/Pets";
 import { styles } from "../css-common";
 import { Chip, withStyles } from "@mui/material";
+import LoadDefaultData from "../app/LoadDefaultData";
 import { useZooContext } from "../app/ZooContext";
 
 const pageName = "ANIMALS";
@@ -92,7 +93,7 @@ export function MUIResponsiveAppBar() {
 		<AppBar position="static">
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
-					{/* Display for small screens */}
+					{/* Display for large screens */}
 					<NameIcon
 						sx={{ display: { xs: "none", md: "flex" }, mr: 1 }}
 					/>
@@ -148,7 +149,6 @@ export function MUIResponsiveAppBar() {
 							}}
 						>
 							{pages.map(([page, link]) => (
-								// <Link href={link}>
 								<MenuItem
 									key={page}
 									onClick={handleCloseNavMenu}
@@ -158,12 +158,14 @@ export function MUIResponsiveAppBar() {
 										{page}
 									</Typography>
 								</MenuItem>
-								// </Link>
 							))}
+							<MenuItem>
+								<LoadDefaultData />
+							</MenuItem>
 						</Menu>
 					</Box>
 
-					{/* Display for Large Screens */}
+					{/* Display for small screens */}
 					<NameIcon
 						sx={{ display: { xs: "flex", md: "none" }, mr: 1 }}
 					/>
@@ -205,6 +207,7 @@ export function MUIResponsiveAppBar() {
 								{page}
 							</Button>
 						))}
+						<LoadDefaultData />
 					</Box>
 
 					{/* Zoo Menu */}
