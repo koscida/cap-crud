@@ -18,26 +18,33 @@ public class Zoo {
 	@Column(name = "CURRENT_DAY")
 	private int currentDay;
 
+	@Column(name = "FOOD")
+	private int food;
+
 	// constructors
 
 	public Zoo() {
 		this.name = "";
 		this.currentDay = 0;
+		this.food = 0;
 	}
 
 	public Zoo(String name) {
 		this.name = name;
 		this.currentDay = 0;
+		this.food = 0;
 	}
 
 	public Zoo(String name, int currentDay) {
 		this.name = name;
 		this.currentDay = currentDay;
+		this.food = 0;
 	}
 
 	public Zoo(int currentDay) {
 		this.name = "";
 		this.currentDay = currentDay;
+		this.food = 0;
 	}
 
 	// getters and setters
@@ -63,6 +70,13 @@ public class Zoo {
 		this.currentDay = currentDay;
 	}
 
+	public int getFood() {
+		return food;
+	}
+
+	public void setFood(int food) {
+		this.food = food;
+	}
 
 	// overrides
 
@@ -73,6 +87,7 @@ public class Zoo {
 				"id=" + id +
 				", name='" + name + '\'' +
 				", currentDay=" + currentDay +
+				", food=" + food +
 				'}';
 	}
 
@@ -81,11 +96,11 @@ public class Zoo {
 		if (this == o) return true;
 		if (!(o instanceof Zoo)) return false;
 		Zoo zoo = (Zoo) o;
-		return id == zoo.id && currentDay == zoo.currentDay && name.equals(zoo.name);
+		return id == zoo.id && currentDay == zoo.currentDay && name.equals(zoo.name) && food == zoo.food;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, name, currentDay);
+		return Objects.hash(id, name, currentDay, food);
 	}
 }

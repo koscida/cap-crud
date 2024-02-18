@@ -24,71 +24,89 @@ const findSelected = (list, selectedId) => {
 const AnimalList = ({ isEditing = false }) => {
 	let { zooId, animalId } = useParams();
 
-	const [animals, setAnimals] = useState(null);
+	const [selectedZooId, setSelectedZooId] = useState(parseInt(zooId));
 	const [selectedAnimalId, setSelectedAnimalId] = useState(
 		parseInt(animalId)
 	);
-	const [selectedZooId, setSelectedZooId] = useState(parseInt(zooId));
+	const [animals, setAnimals] = useState(null);
 
 	let navigate = useNavigate();
+
+	// check?
+
+	let selectedAnimal = null;
+	if (zooId) selectedAnimal = findSelected(animals, selectedAnimalId);
 
 	// on load
 
 	useEffect(() => {
-		if (!animals) pullList();
-		// console.log(
-		// 	"--AnimalList-- animals: ",
-		// 	animals,
-		// 	" selectedId: ",
-		// 	selectedAnimalId
-		// );
-	}, [animals]);
+		if (!animals) {
+			// send
+			animalDataService
+				.getAll(selectedZooId)
+				.then((res) => {
+					// console.log(res);
+					// set the animal list
+					setAnimals(res.data.data);
+				})
+				.catch((e) => console.log(e));
+		}
+		if (zooId !== selectedZooId) setSelectedZooId(parseInt(zooId));
+		if (animalId !== selectedAnimalId)
+			setSelectedAnimalId(parseInt(animalId));
+	}, [zooId, animalId, selectedZooId, selectedAnimalId, animals]);
 
-	// get list
-	const pullList = () => {
-		// send
-		animalDataService
-			.getAll(selectedZooId)
-			.then((res) => {
-				// console.log(res);
-				// set the animal list
-				setAnimals(res.data.data);
-			})
-			.catch((e) => console.log(e));
-	};
-
+	console.log(
+		"--AnimalList--",
+		", isEditing: ",
+		isEditing,
+		", zooId: ",
+		zooId,
+		", animalId: ",
+		animalId,
+		", animals: ",
+		animals,
+		", selectedAnimalId: ",
+		selectedAnimalId,
+		", selectedZooId: ",
+		selectedZooId
+	);
 	return (
 		<Box>
 			<Box>
 				<h1>Animal List</h1>
 			</Box>
 			<Grid container spacing={2}>
-				<Grid item="true" xs={4}>
-					<ListView
-						listData={animals}
-						selectedItemId={selectedAnimalId}
-						handleOnClick={(clickedId) =>
-							navigate(`/zoos/${zooId}/animals/${clickedId}`)
-						}
-						handleOnNew={() =>
-							navigate(`/zoos/${zooId}/animals/new`)
-						}
-					/>
-				</Grid>
+				{animals ? (
+					<Grid item="true" xs={4}>
+						<ListView
+							listData={animals}
+							selectedItemId={selectedAnimalId}
+							handleOnClick={(clickedId) =>
+								navigate(`/zoos/${zooId}/animals/${clickedId}`)
+							}
+							handleOnNew={() =>
+								navigate(`/zoos/${zooId}/animals/new`)
+							}
+						/>
+					</Grid>
+				) : (
+					<></>
+				)}
 
-				<Grid item="true" xs={8}>
-					<Box>
-						{isEditing ? (
-							<AnimalEdit
-								animal={findSelected(animals, selectedAnimalId)}
-							/>
-						) : (
-							<AnimalView
-								animal={findSelected(animals, selectedAnimalId)}
-							/>
-						)}
-					</Box>
-				</Grid>
+				{selectedAnimal ? (
+					<Grid item="true" xs={8}>
+						<Box>
+							{isEditing ? (
+								<AnimalEdit animal={selectedAnimal} />
+							) : (
+								<AnimalView animal={selectedAnimal} />
+							)}
+						</Box>
+					</Grid>
+				) : (
+					<></>
+				)}
 			</Grid>
 		</Box>
 	);

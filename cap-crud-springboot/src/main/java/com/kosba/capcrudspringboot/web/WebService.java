@@ -175,6 +175,8 @@ public class WebService {
 			zoo.setName("Unnamed Zoo");
 		if(zoo.getCurrentDay() == 0)
 			zoo.setCurrentDay(1);
+		if(zoo.getFood() == 0)
+			zoo.setFood(10);
 
 		// save
 		Zoo savedZoo = this.zooRepository.save(zoo);

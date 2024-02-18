@@ -51,16 +51,20 @@ const ZooList = ({ isEditing = false }) => {
 				<h1>Zoo List</h1>
 			</Box>
 			<Grid container spacing={2}>
-				<Grid item={true} xs={4}>
-					<ListView
-						listData={zoos}
-						selectedItemId={selectedZooId}
-						handleOnClick={(clickedId) =>
-							navigate(`/zoos/${clickedId}`)
-						}
-						handleOnNew={() => navigate("/zoos/new")}
-					/>
-				</Grid>
+				{zoos ? (
+					<Grid item={true} xs={4}>
+						<ListView
+							listData={zoos}
+							selectedItemId={selectedZooId}
+							handleOnClick={(clickedId) =>
+								navigate(`/zoos/${clickedId}`)
+							}
+							handleOnNew={() => navigate("/zoos/new")}
+						/>
+					</Grid>
+				) : (
+					<></>
+				)}
 
 				{selectedZoo ? (
 					<Grid item={true} xs={8}>
