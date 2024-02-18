@@ -105,7 +105,7 @@ const ZooNew = () => {
 					</Box>
 					<Box>
 						<h3>Zoo Rules!</h3>
-						<p>Only 6 zoos per user!</p>
+						<p>Limit of 6 total zoos</p>
 					</Box>
 				</Grid>
 			</Grid>

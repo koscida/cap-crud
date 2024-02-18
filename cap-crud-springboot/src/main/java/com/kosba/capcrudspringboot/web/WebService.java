@@ -4,7 +4,8 @@ import com.kosba.capcrudspringboot.models.Animal;
 import com.kosba.capcrudspringboot.models.AnimalRepository;
 import com.kosba.capcrudspringboot.models.Zoo;
 import com.kosba.capcrudspringboot.models.ZooRepository;
-import com.kosba.capcrudspringboot.util.MaximumResourceLimit;
+import com.kosba.capcrudspringboot.util.MaximumResourceLimitException;
+import com.kosba.capcrudspringboot.util.PlayException;
 import com.kosba.capcrudspringboot.util.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,11 +44,11 @@ public class WebService {
 		}
 	}
 
-	public Animal addAnimal(Animal animal, Long zooId) throws MaximumResourceLimit {
+	public Animal addAnimal(Animal animal, Long zooId) throws MaximumResourceLimitException {
 		// check limit 10 animals per day
 		List<Animal> animalsBornToday = this.animalRepository.findByZooIdAndBirthDay(zooId, animal.getBirthDay()).get();
 		if(animalsBornToday.size() >= 10)
-			throw new MaximumResourceLimit("There are already 10 animals added for this day:" + animal.getBirthDay());
+			throw new MaximumResourceLimitException("There are already 10 animals added for this day:" + animal.getBirthDay());
 
 		// set zoo id
 		animal.setZooId(zooId);
@@ -71,14 +72,14 @@ public class WebService {
 		return savedAnimal;
 	}
 
-	public Animal modifyAnimal(Long id, Animal animal, Long zooId) throws ResourceNotFoundException {
+	public Animal modifyAnimal(Long animalId, Animal animal, Long zooId) throws ResourceNotFoundException {
 		// find
-		Animal animalUpdating = this.animalRepository.findById(id).orElseThrow(
-				() -> new ResourceNotFoundException("Animal not found for this id: " + id)
+		Animal animalUpdating = this.animalRepository.findById(animalId).orElseThrow(
+				() -> new ResourceNotFoundException("Animal not found for this id: " + animalId)
 		);
 		// test
 		if(animal.getZooId() != zooId) {
-			throw new ResourceNotFoundException("Animal with id (" + id + ") was not found for zoo with id(" + zooId +")");
+			throw new ResourceNotFoundException("Animal with id (" + animalId + ") was not found for zoo with id(" + zooId +")");
 		} else {
 
 			// update only if new value was sent
@@ -100,6 +101,29 @@ public class WebService {
 			// return
 			return updatedAnimal;
 		}
+	}
+	private Animal incrementAnimalsDay(Animal animalUpdating) {
+		int age = animalUpdating.getAge(), hunger = animalUpdating.getHunger(), energy = animalUpdating.getEnergy();
+		// check if dead
+		//  if at max life (10) or max hunger (5)
+		if((age >= 10) || (hunger >= 5)){
+			animalUpdating.setDead(true);
+		}
+		// else still alive
+		else {
+			// add age
+			animalUpdating.setAge(age + 1);
+
+			// add hunger
+			animalUpdating.setHunger(hunger + 1);
+
+			// add energy if less than max
+			if(energy < 5)
+				animalUpdating.setEnergy(energy + 1);
+		}
+
+		// save
+		return this.animalRepository.save(animalUpdating);
 	}
 
 	public void deleteAnimalById(Long id, Long zooId) throws ResourceNotFoundException {
@@ -140,11 +164,11 @@ public class WebService {
 		return zoo;
 	}
 
-	public Zoo createNewZoo(Zoo zoo) throws MaximumResourceLimit {
+	public Zoo createNewZoo(Zoo zoo) throws MaximumResourceLimitException {
 		// check max number of zoos
 		List<Zoo> zoos = this.zooRepository.findAll();
 		if(zoos.size() >= 6)
-			throw new MaximumResourceLimit("Maximum number of zoos created");
+			throw new MaximumResourceLimitException("Maximum number of zoos created");
 
 		// set defaults
 		if(zoo.getName().isBlank())
@@ -158,15 +182,27 @@ public class WebService {
 		return savedZoo;
 	}
 
-	public Zoo modifyZoo(Long id, Zoo zooEdits) throws ResourceNotFoundException{
+	public Zoo modifyZoo(Long zooId, Zoo zooEdits) throws ResourceNotFoundException, PlayException {
 		// find
-		Zoo updatingZoo = this.zooRepository.findById(id).orElseThrow(() -> new  ResourceNotFoundException("No zoo found for the id: "+id));
+		Zoo updatingZoo = this.zooRepository.findById(zooId).orElseThrow(() -> new  ResourceNotFoundException("No zoo found for the id: "+zooId));
 
 		// update zoo
 		if(!zooEdits.getName().isBlank())
 			updatingZoo.setName(zooEdits.getName());
-		if(zooEdits.getCurrentDay() > 0)
-			updatingZoo.setCurrentDay(zooEdits.getCurrentDay());
+		if(zooEdits.getCurrentDay() > 0) {
+			// check if adding more than 1 day
+			if(zooEdits.getCurrentDay() != updatingZoo.getCurrentDay() + 1)
+				throw new PlayException("Day was incremented by more than 1 day");
+			else {
+				// increment day
+				updatingZoo.setCurrentDay(zooEdits.getCurrentDay());
+				// update all animals in zoo
+				List<Animal> animals = this.getAllAnimals(zooId);
+				for (Animal a: animals) {
+					this.incrementAnimalsDay(a);
+				}
+			}
+		}
 
 		// save
 		Zoo savedZoo = this.zooRepository.save(updatingZoo);

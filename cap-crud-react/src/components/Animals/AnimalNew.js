@@ -119,7 +119,7 @@ const AnimalNew = () => {
 				<Grid item={true} xs={6}>
 					<Box>
 						<h3>Zoo Rules!</h3>
-						<p>A limit of 10 animals can be added per day</p>
+						<p>Limit of 10 animals created per day</p>
 					</Box>
 					<Box>
 						{contextZoo ? (

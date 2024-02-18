@@ -1,6 +1,7 @@
 package com.kosba.capcrudspringboot.controllers;
 
 import com.kosba.capcrudspringboot.models.Zoo;
+import com.kosba.capcrudspringboot.util.PlayException;
 import com.kosba.capcrudspringboot.util.ResourceNotFoundException;
 import com.kosba.capcrudspringboot.web.WebService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,18 +78,31 @@ public class ZooController {
 
 	// update
 	@PutMapping("/{zooId}")
-	public ResponseEntity<?> updateZoo(@PathVariable Long zooId, @RequestBody Zoo zoo) throws ResourceNotFoundException {
+	public ResponseEntity<?> updateZoo(@PathVariable Long zooId, @RequestBody Zoo zoo) {
 		// test if zooId exists
 		ResponseEntity<?> zooRes = this.getZoo(zooId);
 		if(zooRes.getStatusCode() == HttpStatus.NOT_FOUND) return zooRes;
 		// begin
 		Map<String, Object> map = new LinkedHashMap<>();
-		// update
-		Zoo updatedZoo = this.webService.modifyZoo(zooId, zoo);
-		map.put("status", HttpStatus.OK);
-		map.put("data",updatedZoo);
-		// return
-		return new ResponseEntity<>(map, HttpStatus.OK);
+		// try update
+		try {
+			// update
+			Zoo updatedZoo = this.webService.modifyZoo(zooId, zoo);
+			map.put("status", HttpStatus.OK);
+			map.put("data", updatedZoo);
+			// return
+			return new ResponseEntity<>(map, HttpStatus.OK);
+		} catch (Exception e) {
+			map.clear();
+			if(e.getClass() == ResourceNotFoundException.class)
+				map.put("status", HttpStatus.NOT_FOUND);
+			else
+				 map.put("status", HttpStatus.NOT_ACCEPTABLE);
+
+			map.put("message", e.getMessage());
+			// return
+			return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
+		}
 	}
 
 	// delete 1
