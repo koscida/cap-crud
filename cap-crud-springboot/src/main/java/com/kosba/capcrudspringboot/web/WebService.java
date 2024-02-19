@@ -48,7 +48,7 @@ public class WebService {
 		// check limit 10 animals per day
 		List<Animal> animalsBornToday = this.animalRepository.findByZooIdAndBirthDay(zooId, animal.getBirthDay()).get();
 		if(animalsBornToday.size() >= 10)
-			throw new MaximumResourceLimitException("There are already 10 animals added for this day:" + animal.getBirthDay());
+			throw new MaximumResourceLimitException("There are already 10 animals added for this day (" + animal.getBirthDay() + ")");
 
 		// set zoo id
 		animal.setZooId(zooId);
@@ -57,8 +57,8 @@ public class WebService {
 			animal.setName("Name");
 		if(animal.getAge() == -1)
 			animal.setAge(0);
-		if(animal.getEnergy() == -1)
-			animal.setEnergy(5);
+		if(animal.getHappiness() == -1)
+			animal.setHappiness(5);
 		if(animal.getHunger() == -1)
 			animal.setHunger(0);
 		// note: isDead will default to false
@@ -72,41 +72,94 @@ public class WebService {
 		return savedAnimal;
 	}
 
-	public Animal modifyAnimal(Long animalId, Animal animal, Long zooId) throws ResourceNotFoundException {
-		// find
+	public Animal modifyAnimal(Long animalId, Animal animalEdits, Long zooId) throws ResourceNotFoundException, PlayException {
+		// find animal
 		Animal animalUpdating = this.animalRepository.findById(animalId).orElseThrow(
-				() -> new ResourceNotFoundException("Animal not found for this id: " + animalId)
+				() -> new ResourceNotFoundException("Animal not found for id (" + animalId + ")")
 		);
-		// test
-		if(animal.getZooId() != zooId) {
-			throw new ResourceNotFoundException("Animal with id (" + animalId + ") was not found for zoo with id(" + zooId +")");
-		} else {
+		// if animal in zoo
+		if(animalUpdating.getZooId() != zooId)
+			throw new ResourceNotFoundException("Animal with id (" + animalId + ") was not found for zoo with id (" + zooId +")");
 
-			// update only if new value was sent
-			if (!animal.getName().isBlank())
-				animalUpdating.setName(animal.getName());
-			if (animal.getEnergy() != -1)
-				animalUpdating.setEnergy(animal.getEnergy());
-			if (animal.getHunger() != -1)
-				animalUpdating.setHunger(animal.getHunger());
-			if (animal.getAge() != -1)
-				animalUpdating.setAge(animal.getAge());
-			if (animal.isDead())
-				animalUpdating.setDead(animal.isDead());
-			// note: do not update zooId or birthDay, those will never change
+		// find zoo
+		Zoo zooUpdating = this.zooRepository.findById(animalUpdating.getZooId()).get();
 
-			// save
-			Animal updatedAnimal = this.animalRepository.save(animalUpdating);
+		// update only if new value was sent
 
-			// return
-			return updatedAnimal;
+		// if updating name
+		if (!animalEdits.getName().isBlank())
+			animalUpdating.setName(animalEdits.getName());
+
+		// if petting
+		if (animalEdits.isPetToday()) {
+			// if already pet today
+			if(animalUpdating.isPetToday())
+				throw new PlayException("Animal has already been pet today");
+
+			// if not incrementing by 1
+			int diff = animalEdits.getHappiness() - animalUpdating.getHappiness();
+			if(diff != 1)
+				throw new PlayException("Animal cannot be pet by (" + diff + ")");
+
+			// if no more hours left in the day
+			if(zooUpdating.getCurrentHour() >= 24)
+				throw new PlayException("No more time to pet animals");
+
+			// Animal can be pet!!
+
+			// pet animal
+			if(animalUpdating.getHappiness() < 5)
+				animalUpdating.setHappiness(animalEdits.getHappiness());
+
+			// set pet today
+			animalUpdating.setPetToday(true);
+
+			// increment current hour
+			zooUpdating.setCurrentHour(zooUpdating.getCurrentHour() + 1);
 		}
+
+		// if feeding
+		if (animalEdits.isFedToday()) {
+			// if already fed toady
+			if (animalUpdating.isFedToday())
+				throw new PlayException("Animal has already been fed today");
+
+			// if not incrementing by -1
+			int feedAttempt = animalEdits.getHunger() - animalUpdating.getHunger();
+			if (feedAttempt != -1)
+				throw new PlayException("Animal cannot be fed by (" + feedAttempt + ")");
+
+			// if enough food
+			if (zooUpdating.getFood() < feedAttempt)
+				throw new PlayException("Not enough food to feed the animal");
+
+			// Can feed animal!
+
+			// feed animal
+			if(animalUpdating.getHunger() > 0)
+				animalUpdating.setHunger(animalEdits.getHunger());
+
+			// set fed today
+			animalUpdating.setFedToday(true);
+
+			// decrease food
+			zooUpdating.setFood(zooUpdating.getFood() - 1);
+		}
+
+		// save animal
+		Animal updatedAnimal = this.animalRepository.save(animalUpdating);
+		// save zoo
+		this.zooRepository.save(zooUpdating);
+
+		// return
+		return updatedAnimal;
+
 	}
 	private Animal incrementAnimalsDay(Animal animalUpdating) {
-		int age = animalUpdating.getAge(), hunger = animalUpdating.getHunger(), energy = animalUpdating.getEnergy();
+		int age = animalUpdating.getAge(), hunger = animalUpdating.getHunger(), happiness = animalUpdating.getHappiness();
 		// check if dead
-		//  if at max life (10) or max hunger (5)
-		if((age >= 10) || (hunger >= 5)){
+		//  if at max life (10), max hunger (5), or no happiness (0)
+		if((age >= 10) || (hunger >= 5) || (happiness <= 0)){
 			animalUpdating.setDead(true);
 		}
 		// else still alive
@@ -114,16 +167,25 @@ public class WebService {
 			// add age
 			animalUpdating.setAge(age + 1);
 
-			// add hunger
-			animalUpdating.setHunger(hunger + 1);
+			// increase hunger
+			animalUpdating.setHunger(hunger + (animalUpdating.isFedToday() ? 1 : 2));
 
-			// add energy if less than max
-			if(energy < 5)
-				animalUpdating.setEnergy(energy + 1);
+			// decrease happiness if not pet
+			if(!animalUpdating.isPetToday())
+				animalUpdating.setHappiness(happiness - 1);
+
+			// reset is fed
+			animalUpdating.setFedToday(false);
+
+			// reset pet
+			animalUpdating.setPetToday(false);
 		}
 
 		// save
 		return this.animalRepository.save(animalUpdating);
+	}
+	private void feedAnimal(Animal animal) {
+
 	}
 
 	public void deleteAnimalById(Long id, Long zooId) throws ResourceNotFoundException {
@@ -133,7 +195,7 @@ public class WebService {
 		);
 		// test
 		if(animalDeleting.getZooId() != zooId) {
-			throw new ResourceNotFoundException("Animal with id (" + id + ") was not found for zoo with id(" + zooId +")");
+			throw new ResourceNotFoundException("Animal with id (" + id + ") was not found for zoo with id (" + zooId +")");
 		} else {
 			// delete
 			this.animalRepository.deleteById(id);
@@ -159,7 +221,7 @@ public class WebService {
 
 	public Zoo getZooById(Long id) throws ResourceNotFoundException{
 		// get
-		Zoo zoo = this.zooRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No zoo found for the id: " + id));
+		Zoo zoo = this.zooRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No zoo found for the id (" + id + ")"));
 		// return
 		return zoo;
 	}
@@ -173,10 +235,11 @@ public class WebService {
 		// set defaults
 		if(zoo.getName().isBlank())
 			zoo.setName("Unnamed Zoo");
-		if(zoo.getCurrentDay() == 0)
+		if(zoo.getCurrentDay() == -1)
 			zoo.setCurrentDay(1);
-		if(zoo.getFood() == 0)
+		if(zoo.getFood() == -1)
 			zoo.setFood(10);
+
 
 		// save
 		Zoo savedZoo = this.zooRepository.save(zoo);
@@ -186,7 +249,7 @@ public class WebService {
 
 	public Zoo modifyZoo(Long zooId, Zoo zooEdits) throws ResourceNotFoundException, PlayException {
 		// find
-		Zoo updatingZoo = this.zooRepository.findById(zooId).orElseThrow(() -> new  ResourceNotFoundException("No zoo found for the id: "+zooId));
+		Zoo updatingZoo = this.zooRepository.findById(zooId).orElseThrow(() -> new  ResourceNotFoundException("No zoo found for the id (" + zooId + ")"));
 
 		// update zoo
 		if(!zooEdits.getName().isBlank())

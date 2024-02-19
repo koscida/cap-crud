@@ -69,7 +69,7 @@ public class AnimalController {
 // did not find
 				map.clear();
 				map.put("status", HttpStatus.NOT_FOUND);
-				map.put("message", "No animal found with id: " + animalId);
+				map.put("message", e.getMessage());
 				return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 			}
 		}
@@ -95,7 +95,7 @@ public class AnimalController {
 			} catch (Exception e) {
 				map.clear();
 				map.put("status", HttpStatus.NOT_ACCEPTABLE);
-				map.put("message", "Maximum number of animals created today");
+				map.put("message", e.getMessage());
 				return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
 			}
 		}
@@ -111,12 +111,23 @@ public class AnimalController {
 		else {
 			// create
 			Map<String, Object> map = new LinkedHashMap<String, Object>();
-			// save
-			Animal updatedAnimal = this.webService.modifyAnimal(animalId, animal, zooId);
-			map.put("status", HttpStatus.OK);
-			map.put("data",updatedAnimal);
-			// return
-			return new ResponseEntity<>(map, HttpStatus.OK);
+			// try save
+			try {
+				// save
+				Animal updatedAnimal = this.webService.modifyAnimal(animalId, animal, zooId);
+				map.put("status", HttpStatus.OK);
+				map.put("data", updatedAnimal);
+				// return
+				return new ResponseEntity<>(map, HttpStatus.OK);
+			} catch (Exception e) {
+				map.clear();
+				if(e.getClass() == ResourceNotFoundException.class)
+					map.put("status", HttpStatus.NOT_FOUND);
+				else
+					map.put("status", HttpStatus.NOT_ACCEPTABLE);
+				map.put("message", e.getMessage());
+				return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
+			}
 		}
 	}
 
@@ -140,7 +151,7 @@ public class AnimalController {
 			} catch (Exception e) {
 				map.clear();
 				map.put("status",HttpStatus.NOT_FOUND);
-				map.put("message", "No animal found with id: " + animalId);
+				map.put("message",e.getMessage());
 				return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 			}
 
@@ -179,7 +190,7 @@ public class AnimalController {
 		} catch (Exception e) {
 			map.clear();
 			map.put("status",HttpStatus.NOT_FOUND);
-			map.put("message","No zoo found with id: " + zooId);
+			map.put("message",e.getMessage());
 		}
 		return map;
 	}

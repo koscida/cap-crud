@@ -22,14 +22,20 @@ public class Animal {
 	@Column(name = "hunger")
 	private int hunger;
 
-	@Column(name = "energy")
-	private int energy;
+	@Column(name = "happiness")
+	private int happiness;
 
 	@Column(name = "age")
 	private int age;
 
 	@Column(name = "is_dead")
 	private boolean isDead;
+
+	@Column(name = "is_fed_today")
+	private boolean isFedToday;
+
+	@Column(name = "is_pet_today")
+	private boolean isPetToday;
 
 	@Column(name = "birth_day")
 	private int birthDay;
@@ -41,9 +47,11 @@ public class Animal {
 		this.name = "";
 		this.zooId = -1;
 		this.hunger = -1;
-		this.energy = -1;
+		this.happiness = -1;
 		this.age = -1;
 		this.isDead = false;
+		this.isFedToday = false;
+		this.isPetToday = false;
 		this.birthDay = -1;
 	}
 
@@ -51,9 +59,11 @@ public class Animal {
 		this.name = name;
 		this.zooId = -1;
 		this.hunger = -1;
-		this.energy = -1;
+		this.happiness = -1;
 		this.age = -1;
 		this.isDead = false;
+		this.isFedToday = false;
+		this.isPetToday = false;
 		this.birthDay = birthDay;
 	}
 
@@ -61,9 +71,11 @@ public class Animal {
 		this.name = name;
 		this.zooId = zooId;
 		this.hunger = hunger;
-		this.energy = energy;
+		this.happiness = energy;
 		this.age = age;
 		this.isDead = isDead;
+		this.isFedToday = false;
+		this.isPetToday = false;
 		this.birthDay = birthDay;
 	}
 
@@ -96,12 +108,12 @@ public class Animal {
 		this.hunger = hunger;
 	}
 
-	public int getEnergy() {
-		return energy;
+	public int getHappiness() {
+		return happiness;
 	}
 
-	public void setEnergy(int energy) {
-		this.energy = energy;
+	public void setHappiness(int happiness) {
+		this.happiness = happiness;
 	}
 
 	public int getAge() {
@@ -128,6 +140,22 @@ public class Animal {
 		this.birthDay = birthDay;
 	}
 
+	public boolean isFedToday() {
+		return isFedToday;
+	}
+
+	public void setFedToday(boolean fedToday) {
+		isFedToday = fedToday;
+	}
+
+	public boolean isPetToday() {
+		return isPetToday;
+	}
+
+	public void setPetToday(boolean petToday) {
+		isPetToday = petToday;
+	}
+
 	// overrides
 
 	@Override
@@ -137,9 +165,11 @@ public class Animal {
 				", name='" + name + '\'' +
 				", zooId=" + zooId +
 				", hunger=" + hunger +
-				", energy=" + energy +
+				", energy=" + happiness +
 				", age=" + age +
 				", isDead=" + isDead +
+				", isFedToday=" + isFedToday +
+				", isPetToday=" + isPetToday +
 				", birthDay=" + birthDay +
 				'}';
 	}
@@ -149,11 +179,11 @@ public class Animal {
 		if (this == o) return true;
 		if (!(o instanceof Animal)) return false;
 		Animal animal = (Animal) o;
-		return id == animal.id && zooId == animal.zooId && hunger == animal.hunger && energy == animal.energy && age == animal.age && isDead == animal.isDead && name.equals(animal.name) && birthDay == animal.birthDay;
+		return id == animal.id && zooId == animal.zooId && hunger == animal.hunger && happiness == animal.happiness && age == animal.age && isDead == animal.isDead && isFedToday == animal.isFedToday && isPetToday == animal.isPetToday && name.equals(animal.name) && birthDay == animal.birthDay;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id, zooId, name, hunger, energy, age, isDead, birthDay);
+		return Objects.hash(id, zooId, name, hunger, happiness, age, isDead, isFedToday, isPetToday, birthDay);
 	}
 }

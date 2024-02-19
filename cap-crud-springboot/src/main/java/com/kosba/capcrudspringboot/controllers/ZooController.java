@@ -49,7 +49,7 @@ public class ZooController {
 		} catch (Exception e) {
 			map.clear();
 			map.put("status",HttpStatus.NOT_FOUND);
-			map.put("message","No zoo found with id: " + zooId);
+			map.put("message",e.getMessage());
 			return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
 		}
 	}
@@ -70,7 +70,7 @@ public class ZooController {
 		} catch (Exception e) {
 			map.clear();
 			map.put("status", HttpStatus.NOT_ACCEPTABLE);
-			map.put("message", "Maximum number of zoos created");
+			map.put("message", e.getMessage());
 			// return
 			return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
 		}
@@ -94,12 +94,11 @@ public class ZooController {
 			return new ResponseEntity<>(map, HttpStatus.OK);
 		} catch (Exception e) {
 			map.clear();
+			map.put("message", e.getMessage());
 			if(e.getClass() == ResourceNotFoundException.class)
 				map.put("status", HttpStatus.NOT_FOUND);
 			else
 				 map.put("status", HttpStatus.NOT_ACCEPTABLE);
-
-			map.put("message", e.getMessage());
 			// return
 			return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
 		}
