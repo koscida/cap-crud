@@ -3,13 +3,12 @@ import React from "react";
 import animalDataService from "../../services/AnimalDataService";
 import { useZooContext } from "../../app/ZooContext";
 
-const FeedAnimal = ({ animal }) => {
+const PetAnimal = ({ animal }) => {
 	const { refreshZoos } = useZooContext();
-	const handleClick = () => {
-		// make updates
-		const data = { hunger: animal.hunger - 1, fedToday: true };
 
-		// update
+	const handleClick = () => {
+		const data = { happiness: animal.happiness + 1, petToday: true };
+
 		animalDataService
 			.update(animal.zooId, animal.id, data)
 			.then((res) => {
@@ -18,10 +17,12 @@ const FeedAnimal = ({ animal }) => {
 			})
 			.catch((e) => console.log(e));
 	};
+
 	return (
-		<Button size="small" onClick={handleClick}>
-			Feed
+		<Button onClick={handleClick} size="small">
+			Pet
 		</Button>
 	);
 };
-export default FeedAnimal;
+
+export default PetAnimal;

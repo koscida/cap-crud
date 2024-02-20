@@ -184,9 +184,6 @@ public class WebService {
 		// save
 		return this.animalRepository.save(animalUpdating);
 	}
-	private void feedAnimal(Animal animal) {
-
-	}
 
 	public void deleteAnimalById(Long id, Long zooId) throws ResourceNotFoundException {
 		// find
@@ -239,6 +236,8 @@ public class WebService {
 			zoo.setCurrentDay(1);
 		if(zoo.getFood() == -1)
 			zoo.setFood(10);
+		if(zoo.getCurrentHour() == -1)
+			zoo.setCurrentHour(0);
 
 
 		// save
@@ -254,19 +253,30 @@ public class WebService {
 		// update zoo
 		if(!zooEdits.getName().isBlank())
 			updatingZoo.setName(zooEdits.getName());
+
+		// if updating day
 		if(zooEdits.getCurrentDay() > 0) {
 			// check if adding more than 1 day
 			if(zooEdits.getCurrentDay() != updatingZoo.getCurrentDay() + 1)
 				throw new PlayException("Day was incremented by more than 1 day");
-			else {
-				// increment day
-				updatingZoo.setCurrentDay(zooEdits.getCurrentDay());
-				// update all animals in zoo
-				List<Animal> animals = this.getAllAnimals(zooId);
-				for (Animal a: animals) {
-					this.incrementAnimalsDay(a);
-				}
+
+			// Can change day!
+
+			// increment day
+			updatingZoo.setCurrentDay(zooEdits.getCurrentDay());
+
+			// update all animals in zoo
+			List<Animal> animals = this.getAllAnimals(zooId);
+			for (Animal a: animals) {
+				this.incrementAnimalsDay(a);
 			}
+
+			// reset time
+			updatingZoo.setCurrentHour(0);
+
+			// add food
+			updatingZoo.setFood(updatingZoo.getFood() + 10);
+
 		}
 
 		// save

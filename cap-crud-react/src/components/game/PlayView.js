@@ -18,6 +18,7 @@ import animalDataService from "../../services/AnimalDataService";
 import zooDataService from "../../services/ZooDataService";
 import NextDay from "./NextDay";
 import FeedAnimal from "./FeedAnimal";
+import PetAnimal from "./PetAnimal";
 
 const PlayView = () => {
 	const {
@@ -86,6 +87,9 @@ const PlayView = () => {
 						<State>
 							<p>Food: {contextZoo.food}</p>
 						</State>
+						<State>
+							<p>Time: {contextZoo.currentHour}</p>
+						</State>
 					</Box>
 					<h2>Animals</h2>
 					<Grid container spacing={2}>
@@ -104,14 +108,29 @@ const PlayView = () => {
 										<ItemRow>
 											<Tooltip title="Happiness">
 												<Stat>
-													<FavoriteIcon />{" "}
-													{animal.energy}
+													<FavoriteIcon
+														color={
+															animal.petToday
+																? "primary"
+																: "inherit"
+														}
+													/>{" "}
+													{animal.happiness}
+													<PetAnimal
+														animal={animal}
+													/>
 												</Stat>
 											</Tooltip>
 
 											<Tooltip title="Hunger">
 												<Stat>
-													<RestaurantIcon />{" "}
+													<RestaurantIcon
+														color={
+															animal.fedToday
+																? "primary"
+																: "inherit"
+														}
+													/>{" "}
 													{animal.hunger}
 													<FeedAnimal
 														animal={animal}

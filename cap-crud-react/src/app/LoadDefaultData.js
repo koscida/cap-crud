@@ -5,32 +5,54 @@ import zooDataService from "../services/ZooDataService";
 import { useZooContext } from "./ZooContext";
 
 const LoadDefaultData = () => {
-	const { zoos, refreshZoos } = useZooContext();
+	const {
+		zooData: { zoos },
+		refreshZoos,
+	} = useZooContext();
 
 	const handleClick = () => {
 		// check if already loaded data
-		if (!zoos) {
-			// create data
-			const zoos = [
-				{ name: "zoo 1" },
-				{ name: "zoo 2" },
-				{ name: "zoo 3" },
-			];
-			const animals = [
-				{ name: "animals 1", zooId: 1951 },
-				{ name: "animals 2", zooId: 1951 },
-				{ name: "animals 3", zooId: 1951 },
-			];
+		const zoosToAdd = [
+			{ name: "zoo 1" },
+			{ name: "zoo 2" },
+			{ name: "zoo 3" },
+		];
+		const animalsToAdd = [
+			{ name: "animals 1", zooId: 1951 },
+			{ name: "animals 2", zooId: 1951 },
+			{ name: "animals 3", zooId: 1951 },
+		];
 
-			// call api
-			zoos.forEach((zoo) => {
-				zooDataService.create(zoo).catch((e) => console.log(e));
-			});
-			animals.forEach((animal) => {
-				animalDataService
-					.create(animal.zooId, animal)
-					.catch((e) => console.log(e));
-			});
+		// call api
+		callAPI(zoosToAdd, animalsToAdd);
+	};
+
+	const callAPI = (zoosToAdd, animalsToAdd) => {
+		if (zoosToAdd.length > 0) {
+			zooDataService
+				.create(zoosToAdd[0])
+				.then((res) => {
+					console.log(res);
+					zoosToAdd.shift();
+					callAPI(zoosToAdd, animalsToAdd);
+				})
+				.catch((e) => {
+					console.log(e);
+					console.log(zoosToAdd[0]);
+				});
+		} else if (animalsToAdd.length > 0) {
+			animalDataService
+				.create(animalsToAdd[0].zooId, animalsToAdd[0])
+				.then((res) => {
+					console.log(res);
+					animalsToAdd.shift();
+					callAPI(zoosToAdd, animalsToAdd);
+				})
+				.catch((e) => {
+					console.log(e);
+					console.log(animalsToAdd[0]);
+				});
+		} else {
 			refreshZoos();
 		}
 	};
