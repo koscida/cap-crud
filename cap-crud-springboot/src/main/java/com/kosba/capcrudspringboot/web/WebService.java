@@ -45,6 +45,14 @@ public class WebService {
 	}
 
 	public Animal addAnimal(Animal animal, Long zooId) throws MaximumResourceLimitException {
+		// get zoo
+		Zoo zoo = this.zooRepository.findById(zooId).get();
+
+		// check if birthday set
+		if(animal.getBirthDay() == -1) {
+			animal.setBirthDay(zoo.getCurrentDay());
+		}
+
 		// check limit 10 animals per day
 		List<Animal> animalsBornToday = this.animalRepository.findByZooIdAndBirthDay(zooId, animal.getBirthDay()).get();
 		if(animalsBornToday.size() >= 10)
@@ -61,9 +69,8 @@ public class WebService {
 			animal.setHappiness(5);
 		if(animal.getHunger() == -1)
 			animal.setHunger(0);
-		// note: isDead will default to false
-
-
+		// note: isDead, isPetToday, isFedToday will default to false
+		// note: birthDay is set above
 
 		// save
 		Animal savedAnimal = this.animalRepository.save(animal);

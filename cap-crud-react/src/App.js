@@ -9,6 +9,7 @@ import AnimalNew from "./components/animals/AnimalNew";
 import ZooList from "./components/zoos/ZooList";
 import ZooNew from "./components/zoos/ZooNew";
 import { ZooProvider } from "./app/ZooContext";
+import { GamePlayProvider } from "./app/GamePlayContext";
 
 // app created from the following tutorial:
 // https://www.bezkoder.com/react-material-ui-examples-crud/
@@ -18,45 +19,50 @@ function App() {
 
 	return (
 		<ZooProvider>
-			<MUIResponsiveAppBar />
-			<Container>
-				<Box maxWidth="xl">
-					<BrowserRouter>
-						<Routes>
-							{/* Default Route */}
-							<Route path="/" element={<Home />} />
+			<GamePlayProvider>
+				<MUIResponsiveAppBar />
+				<Container>
+					<Box maxWidth="xl">
+						<BrowserRouter>
+							<Routes>
+								{/* Default Route */}
+								<Route path="/" element={<Home />} />
 
-							{/* Zoo Routes */}
-							<Route path="zoos/" element={<ZooList />} />
-							<Route path="zoos/:zooId" element={<ZooList />} />
-							<Route
-								path="zoos/:zooId/edit"
-								element={<ZooList isEditing={true} />}
-							/>
-							<Route path="zoos/new" element={<ZooNew />} />
+								{/* Zoo Routes */}
+								<Route path="zoos/" element={<ZooList />} />
+								<Route
+									path="zoos/:zooId"
+									element={<ZooList />}
+								/>
+								<Route
+									path="zoos/:zooId/edit"
+									element={<ZooList isEditing={true} />}
+								/>
+								<Route path="zoos/new" element={<ZooNew />} />
 
-							{/* Animal Routes */}
-							<Route
-								path="zoos/:zooId/animals"
-								element={<AnimalList />}
-							/>
-							<Route
-								path="zoos/:zooId/animals/:animalId/"
-								element={<AnimalList />}
-							/>
-							<Route
-								path="zoos/:zooId/animals/:animalId/edit"
-								element={<AnimalList isEditing={true} />}
-							/>
-							<Route
-								path="zoos/:zooId/animals/new"
-								element={<AnimalNew />}
-							/>
-						</Routes>
-					</BrowserRouter>
-					<Outlet />
-				</Box>
-			</Container>
+								{/* Animal Routes */}
+								<Route
+									path="zoos/:zooId/animals"
+									element={<AnimalList />}
+								/>
+								<Route
+									path="zoos/:zooId/animals/:animalId/"
+									element={<AnimalList />}
+								/>
+								<Route
+									path="zoos/:zooId/animals/:animalId/edit"
+									element={<AnimalList isEditing={true} />}
+								/>
+								<Route
+									path="zoos/:zooId/animals/new"
+									element={<AnimalNew />}
+								/>
+							</Routes>
+						</BrowserRouter>
+						<Outlet />
+					</Box>
+				</Container>
+			</GamePlayProvider>
 		</ZooProvider>
 	);
 }
