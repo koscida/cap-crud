@@ -13,7 +13,7 @@ const ZooProvider = ({ children }) => {
 
 	// on load
 	useEffect(() => {
-		console.log("--ZooProvider--useEffect--");
+		// console.log("--ZooProvider--useEffect--");
 		loadZoos();
 	}, []);
 
@@ -25,7 +25,7 @@ const ZooProvider = ({ children }) => {
 
 	// refresh entire zoo list
 	const loadZoos = () => {
-		console.log("--ZooProvider--loadZoos--");
+		// console.log("--ZooProvider--loadZoos--");
 		// send
 		zooDataService
 			.getAll()
@@ -62,7 +62,7 @@ const ZooProvider = ({ children }) => {
 
 	// render
 
-	console.log("--ZooProvider--render--", ", zooData: ", zooData);
+	// console.log("--ZooProvider--render--", ", zooData: ", zooData);
 	return (
 		<ZooContext.Provider
 			value={{

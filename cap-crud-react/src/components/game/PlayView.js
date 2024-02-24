@@ -23,6 +23,9 @@ import { useGamePlayContext } from "../../app/GamePlayContext";
 
 const PlayView = () => {
 	const {
+		zooData: { zoos },
+	} = useZooContext();
+	const {
 		gamePlayData: { gamePlayZoo, gamePlayAnimals },
 		refreshAnimal,
 	} = useGamePlayContext();
@@ -53,13 +56,13 @@ const PlayView = () => {
 
 	// render
 
-	console.log(
-		"--PlayView--render--",
-		", gamePlayZoo ",
-		gamePlayZoo,
-		", gamePlayAnimals ",
-		gamePlayAnimals
-	);
+	// console.log(
+	// 	"--PlayView--render--",
+	// 	", gamePlayZoo ",
+	// 	gamePlayZoo,
+	// 	", gamePlayAnimals ",
+	// 	gamePlayAnimals
+	// );
 	return (
 		<Box>
 			{gamePlayZoo ? (
@@ -155,7 +158,11 @@ const PlayView = () => {
 				</Box>
 			) : (
 				<Box>
-					<p>No zoo selected.</p>
+					<p>
+						{zoos && zoos.length > 0
+							? "No zoo selected"
+							: "No zoos added"}
+					</p>
 				</Box>
 			)}
 		</Box>

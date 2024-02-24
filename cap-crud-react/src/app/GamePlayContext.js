@@ -25,7 +25,7 @@ const GamePlayProvider = ({ children }) => {
 
 	// on load
 	useEffect(() => {
-		console.log("--GamePlayProvider--useEffect--");
+		// console.log("--GamePlayProvider--useEffect--");
 		if (!zoos || zoos.length === 0) {
 			setGamePlayData(initGamePlayData);
 		} else if (zoos && zoos.length > 0) {
@@ -56,12 +56,12 @@ const GamePlayProvider = ({ children }) => {
 	};
 
 	const loadAnimals = () => {
-		console.log("--GamePlayProvider--loadAnimals--");
+		// console.log("--GamePlayProvider--loadAnimals--");
 		refreshAnimals(gamePlayData.gamePlayZoo.id);
 	};
 
 	const loadZooAndAnimals = () => {
-		console.log("--GamePlayProvider--loadZooAndAnimals--");
+		// console.log("--GamePlayProvider--loadZooAndAnimals--");
 		setGamePlayZooId(zoos[0].id);
 	};
 
@@ -69,11 +69,11 @@ const GamePlayProvider = ({ children }) => {
 
 	// set the selected zoo id
 	const setGamePlayZooId = (newZooId) => {
-		console.log(
-			"--GamePlayProvider--setGamePlayZooId--",
-			", newZooId: ",
-			newZooId
-		);
+		// console.log(
+		// 	"--GamePlayProvider--setGamePlayZooId--",
+		// 	", newZooId: ",
+		// 	newZooId
+		// );
 		// check if newZooId exists
 		const gamePlayZoo = findZoo(zoos, newZooId);
 		if (gamePlayZoo) {
@@ -84,13 +84,13 @@ const GamePlayProvider = ({ children }) => {
 
 	// refresh all animals for zoo
 	const refreshAnimals = (zooId, newGamePlayData = null) => {
-		console.log(
-			"--GamePlayProvider--refreshAnimals--",
-			", zooId: ",
-			zooId,
-			", newGamePlayData: ",
-			newGamePlayData
-		);
+		// console.log(
+		// 	"--GamePlayProvider--refreshAnimals--",
+		// 	", zooId: ",
+		// 	zooId,
+		// 	", newGamePlayData: ",
+		// 	newGamePlayData
+		// );
 		animalDataService
 			.getAll(zooId)
 			.then((res) => {
@@ -113,7 +113,7 @@ const GamePlayProvider = ({ children }) => {
 
 	// refresh one zoo
 	const refreshZoo = (zooId) => {
-		console.log("--GamePlayProvider--refreshZoo--", ", zooId: ", zooId);
+		// console.log("--GamePlayProvider--refreshZoo--", ", zooId: ", zooId);
 		zooDataService
 			.get(zooId)
 			.then((res) => {
@@ -134,13 +134,13 @@ const GamePlayProvider = ({ children }) => {
 
 	// refresh one animal
 	const refreshAnimal = (zooId, animalId) => {
-		console.log(
-			"--GamePlayProvider--refreshAnimal--",
-			", zooId: ",
-			zooId,
-			", animalId: ",
-			animalId
-		);
+		// console.log(
+		// 	"--GamePlayProvider--refreshAnimal--",
+		// 	", zooId: ",
+		// 	zooId,
+		// 	", animalId: ",
+		// 	animalId
+		// );
 		animalDataService
 			.get(zooId, animalId)
 			.then((res) => {
@@ -165,13 +165,13 @@ const GamePlayProvider = ({ children }) => {
 
 	// update one animal
 	const updateAnimal = (zooId, animalId, animalData) => {
-		console.log(
-			"--GamePlayProvider--refreshAnimal--",
-			", zooId: ",
-			zooId,
-			", animalId: ",
-			animalId
-		);
+		// console.log(
+		// 	"--GamePlayProvider--updateAnimal--",
+		// 	", zooId: ",
+		// 	zooId,
+		// 	", animalId: ",
+		// 	animalId
+		// );
 		animalDataService
 			.update(zooId, animalId, animalData)
 			.then((res) => {
@@ -193,13 +193,13 @@ const GamePlayProvider = ({ children }) => {
 
 	// update one zoo
 	const updateZoo = (zooId, zooData) => {
-		console.log(
-			"--GamePlayProvider--updateZoo--",
-			", zooId: ",
-			zooId,
-			", zooData: ",
-			zooData
-		);
+		// console.log(
+		// 	"--GamePlayProvider--updateZoo--",
+		// 	", zooId: ",
+		// 	zooId,
+		// 	", zooData: ",
+		// 	zooData
+		// );
 
 		zooDataService
 			.update(zooId, zooData)
@@ -215,15 +215,43 @@ const GamePlayProvider = ({ children }) => {
 			.catch(err);
 	};
 
+	//
+	//
+	// create
+
+	// create one animal
+	const createAnimal = (zooId, animalData, callback) => {
+		// send
+		animalDataService
+			.create(zooId, animalData)
+			.then((res) => {
+				// console.log("res: ", res);
+				const newAnimal = res.data.data;
+
+				// if update gameplay animals
+				if (newAnimal.zooId === gamePlayData.gamePlayZoo.id) {
+					const gamePlayAnimals = [
+						...gamePlayData.gamePlayAnimals,
+						newAnimal,
+					];
+
+					setGamePlayData({ ...gamePlayData, gamePlayAnimals });
+				}
+
+				callback(res);
+			})
+			.catch((e) => console.log(e));
+	};
+
 	// render
 
-	console.log(
-		"--GamePlayProvider--render--",
-		", gamePlayData: ",
-		gamePlayData,
-		", zoos: ",
-		zoos
-	);
+	// console.log(
+	// 	"--GamePlayProvider--render--",
+	// 	", gamePlayData: ",
+	// 	gamePlayData,
+	// 	", zoos: ",
+	// 	zoos
+	// );
 	return (
 		<GamePlayContext.Provider
 			value={{
@@ -237,6 +265,7 @@ const GamePlayProvider = ({ children }) => {
 				refreshAnimal,
 				updateAnimal,
 				refreshAnimals,
+				createAnimal,
 			}}
 		>
 			{children}

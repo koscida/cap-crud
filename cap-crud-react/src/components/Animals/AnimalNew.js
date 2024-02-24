@@ -16,56 +16,45 @@ import CloseIcon from "@mui/icons-material/Close";
 import { styles } from "../../css-common";
 import zooDataService from "../../services/ZooDataService";
 import { useZooContext } from "../../app/ZooContext";
+import { useGamePlayContext } from "../../app/GamePlayContext";
 
 const initName = "";
 
 const AnimalNew = () => {
 	const {
-		zooData: { zoos, contextZoo },
+		zooData: { zoos },
 		refreshZoos,
 	} = useZooContext();
+	const {
+		gamePlayData: { gamePlayZoo, gamePlayAnimals },
+		createAnimal,
+	} = useGamePlayContext();
 	let { zooId } = useParams();
 
 	const [name, setName] = useState(initName);
 	const [isSnackbarSaveOpen, setIsSnackbarSaveOpen] = useState(false);
-	const [animals, setAnimals] = useState([]);
 
-	useEffect(() => {
-		pullAnimals();
-	}, []);
+	const animals = zooId ? null : gamePlayAnimals;
+	const zoo = zooId ? zoos.find((z) => z.id === zooId) : gamePlayZoo;
 
-	const pullAnimals = () => {
-		animalDataService
-			.getAll(zooId)
-			.then((res) => {
-				// console.log(res);
-				setAnimals(res.data.data);
-			})
-			.catch((e) => console.log(e));
-	};
+	// handlers
 
-	const createAnimal = () => {
+	const handleCreateAnimal = () => {
 		// create data to send
 		const data = {
 			name,
-			zooId,
-			birthDay: contextZoo.currentDay,
+			zooId: zoo.id,
+			birthDay: zoo.currentDay,
 		};
-		console.log(data);
+		// console.log("data: ", data);
 
 		// send
-		animalDataService
-			.create(zooId, data)
-			.then((res) => {
-				console.log(res);
-				// clear the form
-				setName(initName);
-				// save
-				setIsSnackbarSaveOpen(true);
-				// refresh
-				pullAnimals();
-			})
-			.catch((e) => console.log(e));
+		createAnimal(zoo.id, data, (res) => {
+			// clear the form
+			setName(initName);
+			// save
+			setIsSnackbarSaveOpen(true);
+		});
 	};
 
 	const snackAction = (
@@ -103,7 +92,10 @@ const AnimalNew = () => {
 							/>
 						</Box>
 
-						<Button onClick={createAnimal} variant="contained">
+						<Button
+							onClick={handleCreateAnimal}
+							variant="contained"
+						>
 							Create
 						</Button>
 
@@ -122,18 +114,16 @@ const AnimalNew = () => {
 						<p>Limit of 10 animals created per day</p>
 					</Box>
 					<Box>
-						{contextZoo ? (
+						{zoo ? (
 							<p>
 								<strong>
-									Animals added today (Day{" "}
-									{contextZoo.currentDay}
+									Animals added today (Day {zoo.currentDay}
 									):
 								</strong>
 								&nbsp;
 								{
 									animals.filter(
-										(a) =>
-											a.birthDay === contextZoo.currentDay
+										(a) => a.birthDay === zoo.currentDay
 									).length
 								}
 							</p>
