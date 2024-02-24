@@ -19,26 +19,13 @@ import zooDataService from "../../services/ZooDataService";
 import NextDay from "./NextDay";
 import FeedAnimal from "./FeedAnimal";
 import PetAnimal from "./PetAnimal";
+import { useGamePlayContext } from "../../app/GamePlayContext";
 
 const PlayView = () => {
 	const {
-		zooData: { contextZoo },
-	} = useZooContext();
-
-	const [animals, setAnimals] = useState(null);
-
-	useEffect(() => {
-		if (contextZoo)
-			animalDataService
-				.getAll(contextZoo.id)
-				.then((res) => {
-					console.log(res);
-
-					// set animals
-					setAnimals(res.data.data);
-				})
-				.catch((e) => console.log(e));
-	}, [contextZoo]);
+		gamePlayData: { gamePlayZoo, gamePlayAnimals },
+		refreshAnimal,
+	} = useGamePlayContext();
 
 	// views
 
@@ -66,12 +53,19 @@ const PlayView = () => {
 
 	// render
 
+	console.log(
+		"--PlayView--render--",
+		", gamePlayZoo ",
+		gamePlayZoo,
+		", gamePlayAnimals ",
+		gamePlayAnimals
+	);
 	return (
 		<Box>
-			{contextZoo ? (
+			{gamePlayZoo ? (
 				<Box>
 					<Box>
-						<h1>{contextZoo.name}</h1>
+						<h1>{gamePlayZoo.name}</h1>
 					</Box>
 					<Box
 						sx={{
@@ -81,20 +75,20 @@ const PlayView = () => {
 						}}
 					>
 						<State>
-							<p>Day: {contextZoo.currentDay}</p>
-							<NextDay />
+							<p>Day: {gamePlayZoo.currentDay}</p>
+							<NextDay zoo={gamePlayZoo} />
 						</State>
 						<State>
-							<p>Food: {contextZoo.food}</p>
+							<p>Food: {gamePlayZoo.food}</p>
 						</State>
 						<State>
-							<p>Time: {contextZoo.currentHour}</p>
+							<p>Time: {gamePlayZoo.currentHour}</p>
 						</State>
 					</Box>
 					<h2>Animals</h2>
 					<Grid container spacing={2}>
-						{animals ? (
-							animals.map((animal) => (
+						{gamePlayAnimals ? (
+							gamePlayAnimals.map((animal) => (
 								<Grid item xs={2} key={animal.id}>
 									<Paper
 										sx={{
@@ -160,7 +154,9 @@ const PlayView = () => {
 					</Grid>
 				</Box>
 			) : (
-				<></>
+				<Box>
+					<p>No zoo selected.</p>
+				</Box>
 			)}
 		</Box>
 	);

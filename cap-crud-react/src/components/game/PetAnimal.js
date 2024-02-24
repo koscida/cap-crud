@@ -2,20 +2,17 @@ import { Button } from "@mui/material";
 import React from "react";
 import animalDataService from "../../services/AnimalDataService";
 import { useZooContext } from "../../app/ZooContext";
+import { useGamePlayContext } from "../../app/GamePlayContext";
 
 const PetAnimal = ({ animal }) => {
-	const { refreshZoos } = useZooContext();
+	const { updateAnimal } = useGamePlayContext();
 
 	const handleClick = () => {
+		// make updates
 		const data = { happiness: animal.happiness + 1, petToday: true };
 
-		animalDataService
-			.update(animal.zooId, animal.id, data)
-			.then((res) => {
-				console.log(res);
-				refreshZoos();
-			})
-			.catch((e) => console.log(e));
+		// save
+		updateAnimal(animal.zooId, animal.id, data);
 	};
 
 	return (

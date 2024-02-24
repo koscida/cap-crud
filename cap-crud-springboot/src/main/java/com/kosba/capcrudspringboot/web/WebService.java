@@ -265,7 +265,7 @@ public class WebService {
 		if(zooEdits.getCurrentDay() > 0) {
 			// check if adding more than 1 day
 			if(zooEdits.getCurrentDay() != updatingZoo.getCurrentDay() + 1)
-				throw new PlayException("Day was incremented by more than 1 day");
+				throw new PlayException("Day was incremented by more than 1 day, current day (" + updatingZoo.getCurrentDay() + "), day desire to update to: ("+zooEdits.getCurrentDay()+")");
 
 			// Can change day!
 

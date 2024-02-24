@@ -16,6 +16,7 @@ import { styles } from "../css-common";
 import { Chip, withStyles } from "@mui/material";
 import LoadDefaultData from "../app/LoadDefaultData";
 import { useZooContext } from "../app/ZooContext";
+import { useGamePlayContext } from "../app/GamePlayContext";
 
 const pageName = "ANIMALS";
 const NameIcon = PetsIcon;
@@ -34,19 +35,24 @@ const getPages = (zooId) => {
 
 export function MUIResponsiveAppBar() {
 	const {
-		zooData: { zoos, contextZooId, contextZoo },
-		setContextZooId,
+		zooData: { zoos },
 	} = useZooContext();
+	const {
+		gamePlayData: { gamePlayZoo },
+		setGamePlayZooId,
+	} = useGamePlayContext();
 
 	const [anchorElNav, setAnchorElNav] = useState(null);
 	const [anchorElUser, setAnchorElUser] = useState(null);
 	const [anchorElZoo, setAnchorElZoo] = useState(null);
 
-	const [pages, setPages] = useState(getPages(contextZooId));
+	const [pages, setPages] = useState(
+		getPages(gamePlayZoo ? gamePlayZoo.id : null)
+	);
 
 	useEffect(() => {
-		setPages(getPages(contextZooId));
-	}, [contextZooId]);
+		if (gamePlayZoo) setPages(getPages(gamePlayZoo.id));
+	}, [gamePlayZoo]);
 
 	// handlers
 
@@ -69,7 +75,7 @@ export function MUIResponsiveAppBar() {
 			", newZooId: ",
 			newZooId
 		);
-		setContextZooId(newZooId);
+		setGamePlayZooId(newZooId);
 		handleCloseZooMenu();
 	};
 
@@ -211,7 +217,7 @@ export function MUIResponsiveAppBar() {
 					</Box>
 
 					{/* Zoo Menu */}
-					{zoos && zoos.length > 0 && contextZoo ? (
+					{zoos && zoos.length > 0 && gamePlayZoo ? (
 						<Box sx={{ flexGrow: 0, mr: 3 }}>
 							<Tooltip title="Open zoo settings">
 								<Box
@@ -223,12 +229,12 @@ export function MUIResponsiveAppBar() {
 									<Typography sx={{ mr: 1 }}>Zoo:</Typography>
 									<Chip
 										sx={{ mr: 1 }}
-										label={contextZoo.name}
+										label={gamePlayZoo.name}
 										color="info"
 										onClick={handleOpenZooMenu}
 									/>
 									<Typography sx={{ mr: 1 }}>
-										Day: {contextZoo.currentDay}
+										Day: {gamePlayZoo.currentDay}
 									</Typography>
 								</Box>
 							</Tooltip>

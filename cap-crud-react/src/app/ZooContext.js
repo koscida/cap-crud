@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect } from "react";
 import zooDataService from "../services/ZooDataService";
 import useLocalStorage from "../util/useLocalStorage";
 
+const err = (e) => console.log(`Error: ${e}\nMessage:${e.data.message}`);
+
 const ZooContext = createContext();
 
 const ZooProvider = ({ children }) => {
@@ -11,14 +13,19 @@ const ZooProvider = ({ children }) => {
 
 	// on load
 	useEffect(() => {
-		refreshZoos();
+		console.log("--ZooProvider--useEffect--");
+		loadZoos();
 	}, []);
 
 	// handlers
 
-	// refresh entire zoo list
 	const refreshZoos = () => {
-		console.log("--ZooProvider--refreshZoos--");
+		loadZoos();
+	};
+
+	// refresh entire zoo list
+	const loadZoos = () => {
+		console.log("--ZooProvider--loadZoos--");
 		// send
 		zooDataService
 			.getAll()
@@ -30,7 +37,7 @@ const ZooProvider = ({ children }) => {
 				// set zoo data
 				setZooData({ ...zooData, zoos });
 			})
-			.catch((e) => console.log(`Error: ${e}`));
+			.catch(err);
 	};
 
 	// refresh one zoo
@@ -50,12 +57,12 @@ const ZooProvider = ({ children }) => {
 				// save
 				setZooData({ ...zooData, zoos });
 			})
-			.catch((e) => console.log(e));
+			.catch(err);
 	};
 
 	// render
 
-	console.log("--ZooProvider--", ", zooData: ", zooData);
+	console.log("--ZooProvider--render--", ", zooData: ", zooData);
 	return (
 		<ZooContext.Provider
 			value={{

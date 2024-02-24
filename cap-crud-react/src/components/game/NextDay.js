@@ -2,28 +2,19 @@ import React from "react";
 import { Box, Button } from "@mui/material";
 import { useZooContext } from "../../app/ZooContext";
 import zooDataService from "../../services/ZooDataService";
+import { useGamePlayContext } from "../../app/GamePlayContext";
 
-const NextDay = () => {
-	const {
-		zooData: { contextZoo },
-		refreshZoos,
-	} = useZooContext();
+const NextDay = ({ zoo }) => {
+	const { updateZoo } = useGamePlayContext();
 
 	// handlers
 
 	const handleNextDay = () => {
-		const data = { ...contextZoo };
-
 		// add a day
-		data.currentDay++;
+		const data = { currentDay: zoo.currentDay + 1 };
 
-		zooDataService
-			.update(contextZoo.id, data)
-			.then((res) => {
-				console.log(res);
-				refreshZoos();
-			})
-			.catch((e) => console.log(e));
+		// save
+		updateZoo(zoo.id, data);
 	};
 
 	return (

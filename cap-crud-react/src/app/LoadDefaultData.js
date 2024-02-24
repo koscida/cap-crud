@@ -18,9 +18,9 @@ const LoadDefaultData = () => {
 			{ name: "zoo 3" },
 		];
 		const animalsToAdd = [
-			{ name: "animals 1", zooId: 1951 },
-			{ name: "animals 2", zooId: 1951 },
-			{ name: "animals 3", zooId: 1951 },
+			{ name: "animal 1", zooId: 1951 },
+			{ name: "animal 2", zooId: 1951 },
+			{ name: "animal 3", zooId: 1951 },
 		];
 
 		// call api
@@ -29,8 +29,9 @@ const LoadDefaultData = () => {
 
 	const callAPI = (zoosToAdd, animalsToAdd) => {
 		if (zoosToAdd.length > 0) {
+			const newZoo = zoosToAdd[0];
 			zooDataService
-				.create(zoosToAdd[0])
+				.create(newZoo)
 				.then((res) => {
 					console.log(res);
 					zoosToAdd.shift();
@@ -38,11 +39,12 @@ const LoadDefaultData = () => {
 				})
 				.catch((e) => {
 					console.log(e);
-					console.log(zoosToAdd[0]);
+					console.log(newZoo);
 				});
 		} else if (animalsToAdd.length > 0) {
+			const newAnimal = animalsToAdd[0];
 			animalDataService
-				.create(animalsToAdd[0].zooId, animalsToAdd[0])
+				.create(newAnimal.zooId, newAnimal)
 				.then((res) => {
 					console.log(res);
 					animalsToAdd.shift();
@@ -50,7 +52,7 @@ const LoadDefaultData = () => {
 				})
 				.catch((e) => {
 					console.log(e);
-					console.log(animalsToAdd[0]);
+					console.log(newAnimal);
 				});
 		} else {
 			refreshZoos();

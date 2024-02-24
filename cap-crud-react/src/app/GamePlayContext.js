@@ -7,72 +7,107 @@ import { useZooContext } from "./ZooContext";
 
 const GamePlayContext = createContext();
 
+const err = (e) => console.log(`Error: ${e}\nMessage:${e.data.message}`);
+
 const GamePlayProvider = ({ children }) => {
 	const {
 		zooData: { zoos },
 	} = useZooContext();
 
+	const initGamePlayData = {
+		gamePlayZoo: null,
+		gamePlayAnimals: null,
+	};
 	const [gamePlayData, setGamePlayData] = useLocalStorage(
 		"cap-crud-game-play-data",
-		{
-			contextZoo: null,
-			contextAnimals: null,
-		}
+		initGamePlayData
 	);
 
 	// on load
 	useEffect(() => {
-		// refreshZoos();
-	}, []);
+		console.log("--GamePlayProvider--useEffect--");
+		if (!zoos || zoos.length === 0) {
+			setGamePlayData(initGamePlayData);
+		} else if (zoos && zoos.length > 0) {
+			loadGameData();
+		} else {
+			if (initGamePlayData.gamePlayZoo || initGamePlayData.gamePlayZoo) {
+				setGamePlayData(initGamePlayData);
+			}
+		}
+	}, [zoos]);
 
 	// helpers
 
-	const findZoo = (zoos, id) => {
-		zoos.find((z) => z.id === id);
-	};
+	const findZoo = (zoos, id) => zoos.find((z) => z.id === id);
 
 	// handlers
 
+	const loadGameData = () => {
+		if (zoos && zoos.length > 0) {
+			if (gamePlayData.gamePlayZoo) {
+				if (!gamePlayData.gamePlayAnimals) {
+					loadAnimals();
+				}
+			} else {
+				loadZooAndAnimals();
+			}
+		}
+	};
+
+	const loadAnimals = () => {
+		console.log("--GamePlayProvider--loadAnimals--");
+		refreshAnimals(gamePlayData.gamePlayZoo.id);
+	};
+
+	const loadZooAndAnimals = () => {
+		console.log("--GamePlayProvider--loadZooAndAnimals--");
+		setGamePlayZooId(zoos[0].id);
+	};
+
+	//
+
 	// set the selected zoo id
-	const setContextZooId = (newZooId) => {
-		console.log("--GamePlayProvider--setContextZooId--");
+	const setGamePlayZooId = (newZooId) => {
+		console.log(
+			"--GamePlayProvider--setGamePlayZooId--",
+			", newZooId: ",
+			newZooId
+		);
 		// check if newZooId exists
-		const contextZoo = findZoo(zoos, newZooId);
-		if (contextZoo) {
-			// set the contextZoo
-			setGamePlayData({
-				...gamePlayData,
-				contextZoo,
-			});
+		const gamePlayZoo = findZoo(zoos, newZooId);
+		if (gamePlayZoo) {
+			// now set animals
+			refreshAnimals(gamePlayZoo.id, { gamePlayZoo });
 		}
 	};
 
 	// refresh all animals for zoo
-	const refreshAnimals = (zooId, newZooData = null) => {
+	const refreshAnimals = (zooId, newGamePlayData = null) => {
 		console.log(
 			"--GamePlayProvider--refreshAnimals--",
 			", zooId: ",
 			zooId,
-			", newZooData: ",
-			newZooData
+			", newGamePlayData: ",
+			newGamePlayData
 		);
 		animalDataService
 			.getAll(zooId)
 			.then((res) => {
 				// console.log(res)
-				const contextAnimals = res.data.data;
+				const gamePlayAnimals = res.data.data;
 
 				// save
-				if (newZooData)
-					setGamePlayData({ ...newZooData, contextAnimals });
-				else setGamePlayData({ ...gamePlayData, contextAnimals });
+				setGamePlayData({
+					...(newGamePlayData ? newGamePlayData : {}),
+					gamePlayAnimals,
+				});
 			})
 			.catch((e) => {
 				// print error
 				console.log(e);
-
-				// save new data
-				if (newZooData) setGamePlayData(newZooData);
+				// save
+				if (newGamePlayData) setGamePlayData({ ...newGamePlayData });
 			});
 	};
 
@@ -87,14 +122,14 @@ const GamePlayProvider = ({ children }) => {
 
 				// save
 
-				// if this is the zoo selected, save zooContext too
-				if (newZoo.id === gamePlayData.contextZoo.id)
+				// if this is the zoo selected, save gamePlayZoo too
+				if (newZoo.id === gamePlayData.gamePlayZoo.id)
 					setGamePlayData({
 						...gamePlayData,
-						zooContext: newZoo,
+						gamePlayZoo: newZoo,
 					});
 			})
-			.catch((e) => console.log(e));
+			.catch(err);
 	};
 
 	// refresh one animal
@@ -114,40 +149,98 @@ const GamePlayProvider = ({ children }) => {
 				// get the new animal
 				const newAnimal = res.data.data;
 
-				// save animal in list of contextAnimals
-				const contextAnimals = gamePlayData.contextAnimals.map((a) =>
+				// save animal in list of gamePlayAnimals
+				const gamePlayAnimals = gamePlayData.gamePlayAnimals.map((a) =>
 					a.id === newAnimal.id ? newAnimal : a
 				);
 
 				// save
-				setGamePlayData({ ...gamePlayData, contextAnimals });
+				setGamePlayData({ ...gamePlayData, gamePlayAnimals });
 			})
-			.catch((e) => console.log(e));
+			.catch(err);
+	};
+
+	//
+	//
+
+	// update one animal
+	const updateAnimal = (zooId, animalId, animalData) => {
+		console.log(
+			"--GamePlayProvider--refreshAnimal--",
+			", zooId: ",
+			zooId,
+			", animalId: ",
+			animalId
+		);
+		animalDataService
+			.update(zooId, animalId, animalData)
+			.then((res) => {
+				// console.log(res)
+
+				// get the new animal
+				const newAnimal = res.data.data;
+
+				// save animal in list of gamePlayAnimals
+				const gamePlayAnimals = gamePlayData.gamePlayAnimals.map((a) =>
+					a.id === newAnimal.id ? newAnimal : a
+				);
+
+				// save
+				setGamePlayData({ ...gamePlayData, gamePlayAnimals });
+			})
+			.catch(err);
+	};
+
+	// update one zoo
+	const updateZoo = (zooId, zooData) => {
+		console.log(
+			"--GamePlayProvider--updateZoo--",
+			", zooId: ",
+			zooId,
+			", zooData: ",
+			zooData
+		);
+
+		zooDataService
+			.update(zooId, zooData)
+			.then((res) => {
+				// console.log(res)
+
+				// get the new zoo
+				const gamePlayZoo = res.data.data;
+
+				// save
+				refreshAnimals(gamePlayZoo.id, { gamePlayZoo });
+			})
+			.catch(err);
 	};
 
 	// render
 
 	console.log(
-		"--GamePlayProvider--",
+		"--GamePlayProvider--render--",
 		", gamePlayData: ",
 		gamePlayData,
 		", zoos: ",
 		zoos
 	);
-	return zoos ? (
+	return (
 		<GamePlayContext.Provider
 			value={{
 				gamePlayData,
+
+				setGamePlayZooId,
+
 				refreshZoo,
-				refreshAnimals,
+				updateZoo,
+
 				refreshAnimal,
-				setContextZooId,
+				updateAnimal,
+				refreshAnimals,
 			}}
 		>
 			{children}
 		</GamePlayContext.Provider>
-	) : (
-		<></>
 	);
 };
 
